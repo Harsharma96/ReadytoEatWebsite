@@ -805,17 +805,20 @@ export const MenuSection: React.FC = () => {
                     {cat.emoji}
                   </div>
 
-                  {/* Category Name */}
-                  <h4 className={`font-black text-[9px] sm:text-[11px] leading-tight text-center truncate w-full px-0.5 transition-colors ${
-                    isSelected ? "text-gray-900" : "text-gray-800 group-hover:text-[#FF6B35]"
-                  }`}>
+                  {/* Category Name (Accessible Span instead of H4) */}
+                  <span 
+                    className={`font-bold text-xs leading-tight text-center block w-full px-0.5 transition-colors line-clamp-1 ${
+                      isSelected ? "text-gray-900 font-extrabold" : "text-gray-800 group-hover:text-[#FF6B35]"
+                    }`}
+                    title={cat.name}
+                  >
                     {cat.name}
-                  </h4>
+                  </span>
 
                   {/* Subtitle */}
-                  <p className="text-[7.5px] text-gray-500 font-bold truncate mt-0.5 hidden sm:block w-full px-0.5">
+                  <span className="text-[10px] text-gray-500 font-medium truncate mt-0.5 hidden sm:block w-full px-0.5">
                     {cat.subtitle}
-                  </p>
+                  </span>
 
                   {/* Active Count Pill */}
                   <span className={`text-[7.5px] sm:text-[9px] font-black px-1.5 py-0.2 rounded-full mt-0.5 transition-all duration-200 ${

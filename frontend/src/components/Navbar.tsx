@@ -118,8 +118,8 @@ export const Navbar: React.FC = () => {
               <span className="text-sm sm:text-xl font-black tracking-tight text-[#0B1220] flex items-center font-heading leading-none">
                 FOOD<span className="text-[#FF6B35] group-hover:text-[#FF8A00] transition-colors">EAT</span>
               </span>
-              <span className="text-[6.5px] sm:text-[8.5px] uppercase font-black tracking-widest text-[#2E7D32] mt-0.5 font-sans leading-none">
-                SHAHI RASOI • DESI GHEE
+              <span className="text-[10px] sm:text-xs uppercase font-bold tracking-wider text-emerald-700 mt-0.5 font-sans leading-none">
+                Shahi Rasoi • Desi Ghee
               </span>
             </div>
           </NextLink>

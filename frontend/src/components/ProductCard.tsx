@@ -85,16 +85,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             {/* Top Left: Category Badge */}
             <div className="absolute top-1 left-1 sm:top-2 sm:left-2 z-20 pointer-events-none">
               {isOutOfStock ? (
-                <span className="px-1.5 py-0.5 rounded-md text-[7.5px] sm:text-[8.5px] font-black uppercase tracking-wider bg-red-600 text-white shadow-xs">
+                <span className="px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-gray-900/90 text-white shadow-xs">
                   Sold Out
                 </span>
               ) : (
                 <span 
-                  className="px-1.5 py-0.5 rounded-md text-[7.5px] sm:text-[8.5px] font-black uppercase tracking-wider text-white shadow-xs flex items-center gap-0.5 backdrop-blur-md"
+                  className="px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white shadow-xs flex items-center gap-1 backdrop-blur-md"
                   style={{ backgroundColor: product.accentColor || "#FF6B35" }}
                 >
-                  <Sparkles className="w-2 h-2" />
-                  <span className="truncate max-w-[80px] sm:max-w-[110px]">{product.badge || product.category}</span>
+                  <Sparkles className="w-2.5 h-2.5" />
+                  <span className="whitespace-nowrap">{product.badge || product.category}</span>
                 </span>
               )}
             </div>
@@ -106,11 +106,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 e.stopPropagation();
                 toggleWishlist(product.id);
               }}
-              className="absolute top-1 right-1 sm:top-2 sm:right-2 z-20 w-5.5 h-5.5 sm:w-7 sm:h-7 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-gray-400 hover:text-[#FF4D6D] shadow-xs transition-transform active:scale-90 cursor-pointer"
+              className="absolute top-1 right-1 sm:top-2 sm:right-2 z-20 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-gray-400 hover:text-[#FF4D6D] shadow-xs transition-transform active:scale-90 cursor-pointer"
               title={isFavorited ? "Remove from wishlist" : "Add to wishlist"}
             >
               <Heart 
-                className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-colors ${
+                className={`w-3.5 h-3.5 transition-colors ${
                   isFavorited ? "fill-[#FF4D6D] text-[#FF4D6D]" : "text-gray-600 hover:text-[#FF4D6D]"
                 }`} 
               />
@@ -121,15 +121,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               src={product.images[0]}
               alt={product.name}
               className={`w-full h-full object-cover transform transition-transform duration-500 ${
-                isOutOfStock ? "grayscale contrast-75 opacity-75" : "group-hover/photo:scale-108"
+                isOutOfStock ? "grayscale contrast-75 opacity-60" : "group-hover/photo:scale-108"
               }`}
             />
+
+            {/* Sold Out Dark Overlay */}
+            {isOutOfStock && (
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center pointer-events-none z-10">
+                <span className="px-3 py-1 rounded-full bg-gray-950/90 text-white font-bold text-xs uppercase tracking-wider shadow-md border border-white/20">
+                  Currently Sold Out
+                </span>
+              </div>
+            )}
 
             {/* Hover Quick View Button */}
             {!isOutOfStock && (
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
-                <span className="px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/95 text-gray-900 text-[8.5px] sm:text-[10px] font-black shadow-md flex items-center gap-1">
-                  <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#FF6B35]" />
+                <span className="px-3 py-1 rounded-full bg-white/95 text-gray-900 text-xs font-bold shadow-md flex items-center gap-1">
+                  <Eye className="w-3 h-3 text-[#FF6B35]" />
                   Quick View
                 </span>
               </div>

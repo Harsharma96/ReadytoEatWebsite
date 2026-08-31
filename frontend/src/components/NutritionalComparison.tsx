@@ -449,11 +449,11 @@ export const NutritionalComparison: React.FC = () => {
                   <th className="p-4 lg:p-5 bg-gradient-to-br from-[#FF6B35] to-[#FF4D6D] text-white w-[38%] relative shadow-lg">
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="text-[9.5px] uppercase font-black tracking-widest bg-white/20 px-2 py-0.5 rounded-full text-white inline-flex items-center gap-1 mb-1">
-                          <Sparkles className="w-2.5 h-2.5 text-[#FFC94A]" /> Shahi Standard
+                        <span className="text-xs uppercase font-bold tracking-wider bg-white/20 px-2 py-0.5 rounded-full text-white inline-flex items-center gap-1 mb-1">
+                          <Sparkles className="w-3 h-3 text-[#FFC94A]" /> Shahi Standard
                         </span>
-                        <h4 className="text-xl font-black font-heading tracking-tight">FoodEat™</h4>
-                        <p className="text-[11px] text-orange-100 font-bold">100% Shuddh & Pure Gourmet</p>
+                        <span className="text-xl font-black font-heading tracking-tight block">FoodEat™</span>
+                        <p className="text-xs text-orange-100 font-medium">100% Shuddh & Pure Gourmet</p>
                       </div>
                       <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
                         <Crown className="w-4 h-4 text-[#FFC94A]" />
@@ -463,14 +463,14 @@ export const NutritionalComparison: React.FC = () => {
 
                   {/* Supermarket Frozen Column */}
                   <th className="p-4 lg:p-5 text-gray-800 bg-gray-50/90 w-[17%] border-r border-gray-100">
-                    <h4 className="text-xs font-black text-gray-900">Frozen Supermarket</h4>
-                    <p className="text-[10px] text-gray-400 font-bold mt-0.5">Commercial Ready Packs</p>
+                    <span className="text-xs font-bold text-gray-900 block">Frozen Supermarket</span>
+                    <p className="text-xs text-gray-500 font-medium mt-0.5">Commercial Ready Packs</p>
                   </th>
 
                   {/* Commercial Diners Column */}
                   <th className="p-4 lg:p-5 text-gray-800 bg-gray-50/90 w-[17%]">
-                    <h4 className="text-xs font-black text-gray-900">Commercial Diners</h4>
-                    <p className="text-[10px] text-gray-400 font-bold mt-0.5">Bulk Fast-Food Gravies</p>
+                    <span className="text-xs font-bold text-gray-900 block">Commercial Diners</span>
+                    <p className="text-xs text-gray-500 font-medium mt-0.5">Bulk Fast-Food Gravies</p>
                   </th>
                 </tr>
               </thead>

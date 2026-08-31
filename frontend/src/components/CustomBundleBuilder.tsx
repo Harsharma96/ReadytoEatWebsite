@@ -242,9 +242,9 @@ export const CustomBundleBuilder: React.FC = () => {
                   </div>
 
                   <div>
-                    <h4 className="text-[11.5px] sm:text-xs font-black font-heading truncate leading-tight">
+                    <span className="text-xs font-bold font-heading line-clamp-1 leading-snug block">
                       {pack.title}
-                    </h4>
+                    </span>
                   </div>
                 </button>
               );
@@ -491,34 +491,34 @@ export const CustomBundleBuilder: React.FC = () => {
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <span className="text-[7.5px] sm:text-[8.5px] font-black text-[#FF6B35] block uppercase tracking-wider truncate">
+                      <span className="text-[10px] sm:text-xs font-bold text-[#FF6B35] block uppercase tracking-wider truncate">
                         {product.category}
                       </span>
-                      <h4 className="text-[11px] sm:text-xs font-black text-gray-900 truncate leading-tight group-hover:text-[#FF6B35] transition-colors">
+                      <h4 className="text-xs sm:text-sm font-bold text-gray-900 truncate leading-tight group-hover:text-[#FF6B35] transition-colors" title={product.name}>
                         {product.name}
                       </h4>
-                      <p className="text-[9.5px] sm:text-[10.5px] text-gray-500 font-bold mt-0.5">
+                      <p className="text-xs text-gray-600 font-semibold mt-0.5">
                         ₹{product.price} {product.nutrition?.calories ? `• ${product.nutrition.calories} kcal` : ""}
                       </p>
                     </div>
 
-                    {/* Action Button */}
+                    {/* Action Button (Standard Brand Orange CTA) */}
                     <div className="shrink-0">
                       {isOutOfStock ? (
-                        <span className="text-[8px] font-black text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+                        <span className="text-xs font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-lg">
                           Sold Out
                         </span>
                       ) : (
                         <button
                           onClick={() => addBowlToSlot(product)}
                           disabled={selectedSlots.length >= targetCount}
-                          className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-black transition-all flex items-center gap-0.5 cursor-pointer ${
+                          className={`h-8 sm:h-9 px-3 sm:px-3.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
                             selectedSlots.length >= targetCount
                               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                              : "bg-[#0B1220] hover:bg-[#FF6B35] text-white shadow-2xs active:scale-90"
+                              : "bg-[#FF6B35] hover:bg-[#FF7D20] text-white shadow-xs active:scale-95"
                           }`}
                         >
-                          <Plus className="w-3 h-3" />
+                          <Plus className="w-3.5 h-3.5" />
                           <span>Add</span>
                         </button>
                       )}

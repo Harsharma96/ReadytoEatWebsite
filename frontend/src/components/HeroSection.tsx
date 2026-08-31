@@ -116,8 +116,8 @@ export const HeroSection: React.FC = () => {
             {/* Top Pill */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border border-[#FF6B35]/30 shadow-soft-card">
               <span className="flex h-2.5 w-2.5 rounded-full bg-[#FF6B35] animate-ping" />
-              <span className="text-xs font-black text-gray-900 uppercase tracking-wider">
-                👑 ROYAL INDIAN FLAVORS • 30-MIN HOT HANDI DISPATCH
+              <span className="text-xs font-bold text-gray-900 tracking-normal">
+                👑 Royal Indian Flavors • 30-Min Hot Handi Dispatch
               </span>
             </div>
 
@@ -405,9 +405,12 @@ export const HeroSection: React.FC = () => {
 
         {/* Scroll Indicator */}
         <div className="pt-6 sm:pt-10 text-center flex flex-col items-center justify-center">
-          <a href="#trending" className="text-xs font-black text-gray-400 hover:text-[#FF6B35] flex flex-col items-center gap-1 transition-colors">
+          <a
+            href="#trending"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white hover:text-amber-300 font-bold text-xs shadow-lg transition-all active:scale-95 group"
+          >
             <span>Scroll to Explore</span>
-            <ChevronDown className="w-4 h-4 animate-bounce" />
+            <ChevronDown className="w-3.5 h-3.5 animate-bounce group-hover:translate-y-0.5 transition-transform" />
           </a>
         </div>
 

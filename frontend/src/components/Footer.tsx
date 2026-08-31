@@ -117,28 +117,28 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-3 gap-2 sm:gap-6 py-2 border-b border-white/10 text-left">
           
           {/* Col 1: Explore Menu */}
-          <div className="space-y-1.5">
-            <h4 className="text-[10px] sm:text-xs font-black text-white font-heading uppercase tracking-wider">
+          <div className="space-y-2">
+            <h4 className="text-xs sm:text-sm font-bold text-white font-heading uppercase tracking-wider">
               Explore
             </h4>
-            <ul className="space-y-1 text-[9.5px] sm:text-[11px] text-gray-400">
+            <ul className="space-y-1.5 text-xs sm:text-sm text-gray-400">
               <li>
-                <Link href="/menu" className="hover:text-[#FF6B35] transition-colors truncate block">
+                <Link href="/menu" className="hover:text-[#FF6B35] transition-colors truncate block py-0.5">
                   📜 Full Menu
                 </Link>
               </li>
               <li>
-                <Link href="/gallery" className="hover:text-[#FF6B35] transition-colors truncate block">
+                <Link href="/gallery" className="hover:text-[#FF6B35] transition-colors truncate block py-0.5">
                   📸 Gallery
                 </Link>
               </li>
               <li>
-                <Link href="/box" className="hover:text-[#FF6B35] transition-colors truncate block">
+                <Link href="/box" className="hover:text-[#FF6B35] transition-colors truncate block py-0.5">
                   🍱 Feast Box
                 </Link>
               </li>
               <li>
-                <Link href="/track" className="hover:text-[#FF6B35] transition-colors truncate block">
+                <Link href="/track" className="hover:text-[#FF6B35] transition-colors truncate block py-0.5">
                   🛰️ GPS Track
                 </Link>
               </li>
@@ -146,28 +146,28 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Col 2: Royal Categories */}
-          <div className="space-y-1.5">
-            <h4 className="text-[10px] sm:text-xs font-black text-white font-heading uppercase tracking-wider">
+          <div className="space-y-2">
+            <h4 className="text-xs sm:text-sm font-bold text-white font-heading uppercase tracking-wider">
               Dishes
             </h4>
-            <ul className="space-y-1 text-[9.5px] sm:text-[11px] text-gray-400">
+            <ul className="space-y-1.5 text-xs sm:text-sm text-gray-400">
               <li>
-                <Link href="/category/biryani-north-indian" className="hover:text-[#FF6B35] transition-colors truncate block">
-                  👑 Biryani & Curries
+                <Link href="/category/biryani-north-indian" className="hover:text-[#FF6B35] transition-colors truncate block py-0.5">
+                  👑 Biryani &amp; Curries
                 </Link>
               </li>
               <li>
-                <Link href="/category/burgers-wraps" className="hover:text-[#FF6B35] transition-colors truncate block">
+                <Link href="/category/burgers-wraps" className="hover:text-[#FF6B35] transition-colors truncate block py-0.5">
                   🍔 Smash Burgers
                 </Link>
               </li>
               <li>
-                <Link href="/category/pizzas-garlic-breads" className="hover:text-[#FF6B35] transition-colors truncate block">
+                <Link href="/category/pizzas-garlic-breads" className="hover:text-[#FF6B35] transition-colors truncate block py-0.5">
                   🍕 Truffle Pizza
                 </Link>
               </li>
               <li>
-                <Link href="/category/gujarati-thalis" className="hover:text-[#FF6B35] transition-colors truncate block">
+                <Link href="/category/gujarati-thalis" className="hover:text-[#FF6B35] transition-colors truncate block py-0.5">
                   🟡 Shahi Thalis
                 </Link>
               </li>

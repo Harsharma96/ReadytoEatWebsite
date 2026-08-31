@@ -96,8 +96,8 @@ export const ContactSection: React.FC = () => {
                   <Phone className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[11px] sm:text-xs font-black text-gray-900 truncate">+91 98765 43210 • 1800-DESI-EAT</p>
-                  <p className="text-[8.5px] sm:text-[9.5px] text-gray-400 font-bold">24/7 Shahi Dawat Concierge Line</p>
+                  <p className="text-xs sm:text-sm font-bold text-gray-900 tracking-wide">+91 98765 43210 • 1800-DESI-EAT</p>
+                  <p className="text-xs text-gray-500 font-medium">24/7 Shahi Dawat Concierge Line</p>
                 </div>
               </div>
 

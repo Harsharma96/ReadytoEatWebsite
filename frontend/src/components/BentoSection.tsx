@@ -342,16 +342,16 @@ export const BentoSection: React.FC = () => {
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-[#E63956] to-[#FF4D6D] text-white flex items-center justify-center shadow-xs shrink-0">
                 <Award className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <div className="min-w-0 space-y-0.2">
+              <div className="min-w-0 space-y-0.5">
                 <div className="flex items-center gap-1.5">
-                  <h3 className="text-[11.5px] sm:text-base font-black text-[#0B1220] font-heading leading-tight truncate group-hover:text-[#E63956] transition-colors">
+                  <h3 className="text-xs sm:text-base font-bold text-gray-900 font-heading leading-snug group-hover:text-[#FF6B35] transition-colors">
                     Loved by 50k+ Foodies
                   </h3>
-                  <span className="text-[7px] font-black uppercase text-[#E63956] bg-rose-100/90 border border-rose-200 px-1.5 py-0.1 rounded-full shrink-0 hidden xs:inline-block">
+                  <span className="text-[9px] font-bold uppercase text-rose-700 bg-rose-100 border border-rose-200 px-1.5 py-0.5 rounded-full shrink-0 hidden xs:inline-block">
                     Award
                   </span>
                 </div>
-                <p className="text-[8.5px] sm:text-xs text-gray-500 leading-tight truncate">
+                <p className="text-xs text-gray-500 leading-normal line-clamp-1">
                   Rated 4.9/5 stars with FSSAI sanitized kitchens.
                 </p>
               </div>
