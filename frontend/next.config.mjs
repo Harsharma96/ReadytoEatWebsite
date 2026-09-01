@@ -1,4 +1,13 @@
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+const rawBackendUrl = 
+  process.env.NEXT_PUBLIC_API_URL || 
+  process.env.NEXT_PUBLIC_BACKEND_URL || 
+  process.env.BACKEND_URL || 
+  'http://localhost:5000';
+
+const backendUrl = rawBackendUrl
+  .trim()
+  .replace(/\/+$/, '')
+  .replace(/\/api$/i, '');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
