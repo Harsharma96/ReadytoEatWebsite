@@ -3,19 +3,14 @@ node_modules/
 .pnp
 .pnp.js
 
-# Next.js build output
+# Build output
 .next/
 out/
 build/
 dist/
-
-# .NET build output
 bin/
 obj/
-*.user
-*.suo
-*.userosscache
-*.sln.docstates
+
 
 # Environment files
 .env.local

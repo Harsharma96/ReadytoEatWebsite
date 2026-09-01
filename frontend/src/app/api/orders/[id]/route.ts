@@ -83,13 +83,20 @@ export async function PATCH(
       message: `Order #${id} status updated to ${status}.`,
       order: updated,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Update order error:", error);
     return NextResponse.json(
-      { success: false, message: "Internal server error" },
+      { success: false, message: error?.message || "Internal server error" },
       { status: 500 }
     );
   }
+}
+
+export async function PUT(
+  req: NextRequest,
+  context: { params: { id: string } }
+) {
+  return PATCH(req, context);
 }
 
 export async function DELETE(
