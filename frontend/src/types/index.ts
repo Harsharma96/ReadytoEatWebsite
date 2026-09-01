@@ -1,5 +1,7 @@
 import { Product } from "@/types/product";
 
+export * from "./product";
+
 export interface OrderItem {
   productId: string;
   name: string;
@@ -236,5 +238,3 @@ export interface ChefSpecialConfig {
   buttonText?: string;
   product?: Product;
 }
-
-

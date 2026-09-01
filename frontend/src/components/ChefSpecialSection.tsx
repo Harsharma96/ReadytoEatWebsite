@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Award, ChefHat, Eye, Sparkles } from "lucide-react";
 import { useCart } from "@/context/CartContext";
-import { ChefSpecialConfig } from "@/backend/types";
+import { ChefSpecialConfig } from "@/types";
 
 export const ChefSpecialSection: React.FC = () => {
   const { openQuickView, addToCart, setIsCartOpen } = useCart();

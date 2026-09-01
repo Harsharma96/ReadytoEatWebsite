@@ -15,7 +15,7 @@ import {
   ChevronLeft,
   ChevronDown
 } from "lucide-react";
-import { FeedbackReview } from "@/backend/types";
+import { FeedbackReview } from "@/types";
 import { FeedbackModal } from "./FeedbackModal";
 
 export const ReviewsSection: React.FC = () => {

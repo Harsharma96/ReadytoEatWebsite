@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { OrderStatus } from "@/lib/db";
+import { OrderStatus } from "@/types";
 import { 
   Bike, 
   MapPin, 

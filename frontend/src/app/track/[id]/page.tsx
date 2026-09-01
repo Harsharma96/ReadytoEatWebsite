@@ -6,7 +6,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { LiveOrderMap } from "@/components/LiveOrderMap";
 import { FeedbackModal } from "@/components/FeedbackModal";
-import { Order, OrderStatus } from "@/lib/db";
+import { Order, OrderStatus } from "@/types";
 import { 
   CheckCircle2, 
   Clock, 

@@ -26,7 +26,7 @@ import {
   QrCode
 } from "lucide-react";
 import { downloadOrderReceipt } from "@/utils/generateReceipt";
-import { PublicPaymentConfig } from "@/backend/types";
+import { PublicPaymentConfig } from "@/types";
 
 export const CheckoutModal: React.FC = () => {
   const router = useRouter();

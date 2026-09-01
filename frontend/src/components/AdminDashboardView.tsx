@@ -69,7 +69,7 @@ import {
   Loader2
 } from "lucide-react";
 import Link from "next/link";
-import { Order, OrderStatus, PromoCode, ContactInquiry, NewsletterSubscriber, FeedbackReview, FeastBoxTier, StoreSettings, PaymentTransaction, TrendingSpotlightItem, MenuCategoryItem, ChefSpecialConfig, PaymentGatewaySettings } from "@/backend/types";
+import { Order, OrderStatus, PromoCode, ContactInquiry, NewsletterSubscriber, FeedbackReview, FeastBoxTier, StoreSettings, PaymentTransaction, TrendingSpotlightItem, MenuCategoryItem, ChefSpecialConfig, PaymentGatewaySettings } from "@/types";
 import { PRODUCTS } from "@/data/products";
 import { Product, ProductCategory, CustomizationGroup, CustomizationOption } from "@/types/product";
 import { downloadOrderReceipt, downloadDailyShiftClosingReport, DailyClosingReportData } from "@/utils/generateReceipt";
