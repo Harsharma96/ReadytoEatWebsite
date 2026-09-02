@@ -18,8 +18,12 @@ public class PaymentsController : ControllerBase
     // ==================== PUBLIC PAYMENT APIS ====================
 
     [HttpGet("api/payments/config")]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public async Task<IActionResult> GetPublicPaymentConfig()
     {
+        Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+        Response.Headers["Pragma"] = "no-cache";
+        Response.Headers["Expires"] = "0";
         var config = await _paymentService.GetPublicPaymentConfigAsync();
         return Ok(new
         {

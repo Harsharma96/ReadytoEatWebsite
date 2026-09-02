@@ -238,7 +238,7 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
     isCardOnDeliveryEnabled: true,
     mode: "test",
     currency: "INR",
-    businessUpiId: "foodeat.royal@okhdfcbank",
+    businessUpiId: "admin.foodeat@icici",
     payeeName: "FoodEat Royal Kitchen & Catering",
     qrCodeImageUrl: "",
     upiInstructions: "Scan this QR code with any UPI App (Google Pay, PhonePe, Paytm, BHIM) and enter your 12-digit UTR No. below.",
@@ -793,6 +793,9 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
       }
 
       setGatewaySettings(updatedSettings || payload);
+      try {
+        window.dispatchEvent(new Event("storage"));
+      } catch {}
       showNotification("✅ Scanner & payment settings saved successfully! 📱");
     } catch (e) {
       console.error(e);
@@ -4382,9 +4385,8 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
                     <div className="w-full max-w-[320px] bg-white rounded-2xl border-2 border-orange-200 shadow-md p-4 space-y-3 text-center">
                       <div className="border-b border-gray-100 pb-2">
                         <h5 className="font-black text-xs font-heading text-gray-900">
-                          {gatewaySettings.payeeName || "FoodEat Royal Kitchen"}
+                          {gatewaySettings.payeeName || "FoodEat Royal Kitchen & Catering"}
                         </h5>
-                        <p className="text-[10px] text-gray-500 font-medium">Scan & Pay with Any UPI App</p>
                       </div>
 
                       {/* The QR Image */}
@@ -4397,7 +4399,7 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
                           />
                         ) : (
                           <img
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=8&data=${encodeURIComponent(`upi://pay?pa=${gatewaySettings.businessUpiId || "foodeat.royal@okhdfcbank"}&pn=${encodeURIComponent(gatewaySettings.payeeName || "FoodEat Royal Feast")}&am=549&cu=INR`)}`}
+                            src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=8&data=${encodeURIComponent(`upi://pay?pa=${gatewaySettings.businessUpiId || "admin.foodeat@icici"}&pn=${encodeURIComponent(gatewaySettings.payeeName || "FoodEat Royal Kitchen & Catering")}&am=549&cu=INR`)}`}
                             alt="Dynamic UPI QR Code"
                             className="w-44 h-44 object-contain rounded-lg"
                           />
@@ -4407,14 +4409,10 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
                       {/* UPI ID */}
                       <div className="p-2 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-between text-[11px]">
                         <span className="font-mono font-bold text-gray-800 truncate">
-                          {gatewaySettings.businessUpiId || "foodeat.royal@okhdfcbank"}
+                          {gatewaySettings.businessUpiId || "admin.foodeat@icici"}
                         </span>
                         <span className="text-[10px] font-bold text-[#FF6B35]">Copy UPI</span>
                       </div>
-
-                      <p className="text-[9.5px] text-gray-400 font-medium">
-                        Google Pay • PhonePe • Paytm • BHIM
-                      </p>
                     </div>
                   </div>
 

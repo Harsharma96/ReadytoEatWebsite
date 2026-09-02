@@ -59,7 +59,7 @@ export const CheckoutModal: React.FC = () => {
     isOnlineGatewayEnabled: true,
     isCodEnabled: true,
     isCardOnDeliveryEnabled: true,
-    businessUpiId: "foodeat.royal@okhdfcbank",
+    businessUpiId: "admin.foodeat@icici",
     payeeName: "FoodEat Royal Kitchen & Catering",
     qrCodeImageUrl: "",
     upiInstructions: "Scan this QR code with any UPI App (Google Pay, PhonePe, Paytm, BHIM) and enter your 12-digit UTR No. below.",
@@ -107,25 +107,35 @@ export const CheckoutModal: React.FC = () => {
   } | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Fetch Admin Configured Payment Gateways & UPI QR Scanner
+  // Fetch Admin Configured Payment Gateways & UPI QR Scanner with Live Cross-Tab Sync
   useEffect(() => {
     // 1. Instant check from localStorage for zero-delay sync
-    try {
-      const saved = localStorage.getItem("foodeat_custom_scanner");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.qrCodeImageUrl || parsed.businessUpiId) {
-          setPaymentConfig((prev) => ({
-            ...prev,
-            ...(parsed.qrCodeImageUrl ? { qrCodeImageUrl: parsed.qrCodeImageUrl } : {}),
-            ...(parsed.businessUpiId ? { businessUpiId: parsed.businessUpiId } : {}),
-            ...(parsed.payeeName ? { payeeName: parsed.payeeName } : {}),
-          }));
+    const applyStorageConfig = () => {
+      try {
+        const saved = localStorage.getItem("foodeat_custom_scanner");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.qrCodeImageUrl || parsed.businessUpiId || parsed.payeeName) {
+            setPaymentConfig((prev) => ({
+              ...prev,
+              ...(parsed.qrCodeImageUrl !== undefined ? { qrCodeImageUrl: parsed.qrCodeImageUrl } : {}),
+              ...(parsed.businessUpiId ? { businessUpiId: parsed.businessUpiId } : {}),
+              ...(parsed.payeeName ? { payeeName: parsed.payeeName } : {}),
+            }));
+          }
         }
-      }
-    } catch {}
+      } catch {}
+    };
 
-    // 2. Fetch from backend API
+    applyStorageConfig();
+
+    // Listen to storage events so when Admin saves in another tab, website updates instantly!
+    const handleStorageEvent = (e: StorageEvent | Event) => {
+      applyStorageConfig();
+    };
+    window.addEventListener("storage", handleStorageEvent);
+
+    // 2. Fetch from backend API with no-store cache
     const fetchPaymentConfig = async () => {
       try {
         const apiBase = (process.env.NEXT_PUBLIC_API_URL || "").trim().replace(/\/+$/, "").replace(/\/api$/i, "");
@@ -136,7 +146,7 @@ export const CheckoutModal: React.FC = () => {
 
         for (const url of urlsToTry) {
           try {
-            const res = await fetch(url);
+            const res = await fetch(url, { cache: "no-store" });
             if (res.ok) {
               const data = await res.json();
               const config = data.config || (data.success !== undefined ? data : null);
@@ -159,6 +169,10 @@ export const CheckoutModal: React.FC = () => {
       }
     };
     fetchPaymentConfig();
+
+    return () => {
+      window.removeEventListener("storage", handleStorageEvent);
+    };
   }, []);
 
   // Live Timer for UPI payment waiting
@@ -837,9 +851,8 @@ export const CheckoutModal: React.FC = () => {
                     <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
                       <div>
                         <h4 className="font-black text-xs sm:text-sm text-gray-900 font-heading">
-                          {paymentConfig.payeeName || "FoodEat Royal Feast"}
+                          {paymentConfig.payeeName || "FoodEat Royal Kitchen & Catering"}
                         </h4>
-                        <p className="text-[10px] text-gray-500 font-medium">Scan & Pay with Any UPI App</p>
                       </div>
                       <div className="text-right px-3 py-1 rounded-xl bg-orange-50 border border-orange-200">
                         <span className="text-[8px] text-gray-400 font-black block uppercase">Amount to Pay</span>
@@ -860,15 +873,12 @@ export const CheckoutModal: React.FC = () => {
                           />
                         ) : (
                           <img
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=8&data=${encodeURIComponent(`upi://pay?pa=${paymentConfig.businessUpiId || "foodeat.royal@okhdfcbank"}&pn=${encodeURIComponent(paymentConfig.payeeName || "FoodEat Royal Feast")}&am=${finalTotal || 549}&cu=INR&tn=FoodEat_Order`)}`}
+                            src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=8&data=${encodeURIComponent(`upi://pay?pa=${paymentConfig.businessUpiId || "admin.foodeat@icici"}&pn=${encodeURIComponent(paymentConfig.payeeName || "FoodEat Royal Kitchen & Catering")}&am=${finalTotal || 549}&cu=INR&tn=FoodEat_Order`)}`}
                             alt="UPI QR Scanner"
                             className="w-44 h-44 sm:w-48 sm:h-48 object-contain rounded-lg"
                           />
                         )}
                       </div>
-                      <p className="text-[10px] text-gray-500 font-bold mt-2">
-                        Google Pay • PhonePe • Paytm • BHIM • Cred
-                      </p>
                     </div>
 
                     {/* UPI ID + 1-Click Copy Box */}
@@ -876,7 +886,7 @@ export const CheckoutModal: React.FC = () => {
                       <div className="min-w-0 flex-1">
                         <span className="text-[8.5px] font-black text-gray-400 block uppercase">UPI ID</span>
                         <span className="font-mono font-black text-xs text-gray-900 truncate block">
-                          {paymentConfig.businessUpiId || "foodeat.royal@okhdfcbank"}
+                          {paymentConfig.businessUpiId || "admin.foodeat@icici"}
                         </span>
                       </div>
                       <button

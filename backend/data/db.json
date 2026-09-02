@@ -659,5 +659,26 @@
       "subtotal": 549,
       "updatedAt": "2026-08-31T15:16:42.9261835Z"
     }
+  },
+  "paymentGatewaySettings": {
+    "isRazorpayEnabled": true,
+    "isStripeEnabled": true,
+    "isUpiEnabled": true,
+    "isUpiQrEnabled": true,
+    "isOnlineGatewayEnabled": true,
+    "isCodEnabled": true,
+    "isCardOnDeliveryEnabled": true,
+    "mode": "live",
+    "currency": "INR",
+    "businessUpiId": "admin.foodeat@icici",
+    "payeeName": "FoodEat Royal Kitchen & Catering",
+    "qrCodeImageUrl": "",
+    "upiInstructions": "Scan with any UPI app and enter your 12-digit UTR No.",
+    "razorpayKeyId": "rzp_test_luxury_foodeat_2026",
+    "razorpayKeySecret": "secret_luxury_foodeat_2026",
+    "stripePublishableKey": "pk_test_luxury_foodeat_2026",
+    "autoApproveUpi": true,
+    "autoVerifyTimeoutSeconds": 180,
+    "qrTheme": "royal-amber"
   }
 }
