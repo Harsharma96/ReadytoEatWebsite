@@ -843,92 +843,110 @@ export const CheckoutModal: React.FC = () => {
                   </div>
                 )}
 
-                {/* ================= CLEAN & DIRECT UPI QR SCANNER ================= */}
-                {paymentMethod === "upi" && (
-                  <div className="bg-white border-2 border-[#FF6B35]/40 rounded-2xl p-4 shadow-sm text-gray-900 space-y-3 relative animate-in fade-in zoom-in-95 duration-200">
-                    
-                    {/* Payee & Payable Amount Header */}
-                    <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
-                      <div>
-                        <h4 className="font-black text-xs sm:text-sm text-gray-900 font-heading">
-                          {paymentConfig.payeeName || "FoodEat Royal Kitchen & Catering"}
-                        </h4>
-                      </div>
-                      <div className="text-right px-3 py-1 rounded-xl bg-orange-50 border border-orange-200">
-                        <span className="text-[8px] text-gray-400 font-black block uppercase">Amount to Pay</span>
-                        <span className="text-sm sm:text-base font-black text-[#FF6B35] font-heading leading-none">
-                          ₹{finalTotal || 549}
-                        </span>
-                      </div>
-                    </div>
+                {/* ================= CLEAN & DIRECT UPI QR SCANNER WITH AUTO-AMOUNT ================= */}
+                {paymentMethod === "upi" && (() => {
+                  const upiAmount = Number(finalTotal > 0 ? finalTotal : 1).toFixed(2);
+                  const upiId = (paymentConfig.businessUpiId || "admin.foodeat@icici").trim();
+                  const payee = (paymentConfig.payeeName || "FoodEat Royal Kitchen & Catering").trim();
+                  const upiPaymentUri = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payee)}&am=${upiAmount}&cu=INR&tn=FoodEat_Order`;
+                  const dynamicQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=8&ecc=M&data=${encodeURIComponent(upiPaymentUri)}`;
 
-                    {/* QR Scanner Image */}
-                    <div className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-xl border border-gray-200">
-                      <div className="bg-white p-2 rounded-xl shadow-2xs flex items-center justify-center">
-                        {paymentConfig.qrCodeImageUrl ? (
-                          <img
-                            src={paymentConfig.qrCodeImageUrl}
-                            alt="Merchant UPI Scanner"
-                            className="max-h-64 sm:max-h-72 w-auto max-w-full object-contain rounded-lg"
-                          />
-                        ) : (
-                          <img
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=8&data=${encodeURIComponent(`upi://pay?pa=${paymentConfig.businessUpiId || "admin.foodeat@icici"}&pn=${encodeURIComponent(paymentConfig.payeeName || "FoodEat Royal Kitchen & Catering")}&am=${finalTotal || 549}&cu=INR&tn=FoodEat_Order`)}`}
-                            alt="UPI QR Scanner"
-                            className="w-44 h-44 sm:w-48 sm:h-48 object-contain rounded-lg"
-                          />
-                        )}
+                  return (
+                    <div className="bg-white border-2 border-[#FF6B35]/40 rounded-2xl p-4 shadow-sm text-gray-900 space-y-3 relative animate-in fade-in zoom-in-95 duration-200">
+                      
+                      {/* Payee & Payable Amount Header */}
+                      <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
+                        <div>
+                          <h4 className="font-black text-xs sm:text-sm text-gray-900 font-heading">
+                            {payee}
+                          </h4>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[8.5px] font-black border border-emerald-200">
+                              <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" />
+                              <span>Amount ₹{finalTotal || 549} Auto-Selected</span>
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-right px-3 py-1 rounded-xl bg-orange-50 border border-orange-200">
+                          <span className="text-[8px] text-gray-400 font-black block uppercase">Amount to Pay</span>
+                          <span className="text-sm sm:text-base font-black text-[#FF6B35] font-heading leading-none">
+                            ₹{finalTotal || 549}
+                          </span>
+                        </div>
                       </div>
-                    </div>
 
-                    {/* UPI ID + 1-Click Copy Box */}
-                    <div className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-gray-50 border border-gray-200">
-                      <div className="min-w-0 flex-1">
-                        <span className="text-[8.5px] font-black text-gray-400 block uppercase">UPI ID</span>
-                        <span className="font-mono font-black text-xs text-gray-900 truncate block">
-                          {paymentConfig.businessUpiId || "admin.foodeat@icici"}
-                        </span>
+                      {/* QR Scanner Image - ALWAYS encodes the exact order amount */}
+                      <div className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-xl border border-gray-200">
+                        <div className="bg-white p-2 rounded-xl shadow-2xs flex items-center justify-center">
+                          <img
+                            src={dynamicQrCodeUrl}
+                            alt={`UPI QR Scanner for ₹${finalTotal}`}
+                            className="w-48 h-48 sm:w-52 sm:h-52 object-contain rounded-lg"
+                          />
+                        </div>
+                        <p className="text-[9.5px] text-emerald-700 font-bold mt-2 flex items-center gap-1">
+                          <span>⚡ Scan with GPay, PhonePe, Paytm — Amount ₹{finalTotal} will auto-select!</span>
+                        </p>
                       </div>
-                      <button
-                        type="button"
-                        onClick={handleCopyUpi}
-                        className={`h-7 px-3 rounded-lg text-[10px] font-black transition-all flex items-center gap-1 cursor-pointer active:scale-95 shrink-0 ${
-                          copiedUpi
-                            ? "bg-emerald-500 text-white shadow-xs"
-                            : "bg-white hover:bg-orange-50 text-[#FF6B35] border border-orange-200"
-                        }`}
+
+                      {/* 1-Tap Mobile UPI Payment Button */}
+                      <a
+                        href={upiPaymentUri}
+                        className="w-full h-9 rounded-xl bg-gradient-to-r from-[#FF6B35] to-[#FF8A00] hover:from-[#e55a28] hover:to-[#e57900] text-white font-black text-xs shadow-sm flex items-center justify-center gap-1.5 active:scale-95 transition-all"
                       >
-                        {copiedUpi ? (
-                          <>
-                            <Check className="w-3 h-3" />
-                            <span>Copied!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3 h-3" />
-                            <span>Copy UPI</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
+                        <Zap className="w-3.5 h-3.5 text-yellow-300" />
+                        <span>Tap to Pay ₹{finalTotal || 549} in UPI App</span>
+                      </a>
 
-                    {/* 12-Digit UTR Input */}
-                    <div className="space-y-1">
-                      <label className="block text-[10px] font-black text-gray-700 uppercase tracking-wider">
-                        12-Digit UPI UTR / Transaction Reference ID (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        maxLength={18}
-                        placeholder="Enter UTR from GPay / PhonePe / Paytm"
-                        value={utrNumber}
-                        onChange={(e) => setUtrNumber(e.target.value)}
-                        className="w-full h-8 px-3 rounded-xl bg-white border border-gray-300 font-mono font-bold text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#FF6B35] focus:ring-1 focus:ring-[#FF6B35] transition-all"
-                      />
-                    </div>
+                      {/* UPI ID + 1-Click Copy Box */}
+                      <div className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-gray-50 border border-gray-200">
+                        <div className="min-w-0 flex-1">
+                          <span className="text-[8.5px] font-black text-gray-400 block uppercase">Merchant UPI ID</span>
+                          <span className="font-mono font-black text-xs text-gray-900 truncate block">
+                            {upiId}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleCopyUpi}
+                          className={`h-7 px-3 rounded-lg text-[10px] font-black transition-all flex items-center gap-1 cursor-pointer active:scale-95 shrink-0 ${
+                            copiedUpi
+                              ? "bg-emerald-500 text-white shadow-xs"
+                              : "bg-white hover:bg-orange-50 text-[#FF6B35] border border-orange-200"
+                          }`}
+                        >
+                          {copiedUpi ? (
+                            <>
+                              <Check className="w-3 h-3" />
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3 h-3" />
+                              <span>Copy UPI</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
 
-                  </div>
-                )}
+                      {/* 12-Digit UTR Input */}
+                      <div className="space-y-1">
+                        <label className="block text-[10px] font-black text-gray-700 uppercase tracking-wider">
+                          12-Digit UPI UTR / Transaction Reference ID (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          maxLength={18}
+                          placeholder="Enter UTR after payment"
+                          value={utrNumber}
+                          onChange={(e) => setUtrNumber(e.target.value)}
+                          className="w-full h-8 px-3 rounded-xl bg-white border border-gray-300 font-mono font-bold text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#FF6B35] focus:ring-1 focus:ring-[#FF6B35] transition-all"
+                        />
+                      </div>
+
+                    </div>
+                  );
+                })()}
 
                 {/* Option 2: Debit/Credit Cards */}
                 {paymentConfig.isOnlineGatewayEnabled && (
