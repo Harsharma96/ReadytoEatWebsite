@@ -158,6 +158,7 @@ public class PaymentsController : ControllerBase
     }
 
     [HttpPut("api/admin/payments/gateways")]
+    [HttpPost("api/admin/payments/gateways")]
     public async Task<IActionResult> UpdateGatewaySettings([FromBody] PaymentGatewaySettings settings)
     {
         var updated = await _paymentService.UpdateGatewaySettingsAsync(settings);

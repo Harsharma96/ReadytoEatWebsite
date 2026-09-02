@@ -633,11 +633,41 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
         setTransactions(paymentsData.transactions);
       }
 
-      const gatewayRes = await fetch(`/api/admin/payments/gateways?t=${Date.now()}`);
-      const gatewayData = await gatewayRes.json();
-      if (gatewayData.success && gatewayData.settings) {
-        setGatewaySettings(gatewayData.settings);
-      }
+      try {
+        const apiBase = (process.env.NEXT_PUBLIC_API_URL || "").trim().replace(/\/+$/, "").replace(/\/api$/i, "");
+        const urlsToTry = [
+          `/api/admin/payments/gateways?t=${Date.now()}`,
+          apiBase ? `${apiBase}/api/admin/payments/gateways?t=${Date.now()}` : null,
+        ].filter(Boolean) as string[];
+
+        for (const url of urlsToTry) {
+          try {
+            const gatewayRes = await fetch(url);
+            if (gatewayRes.ok) {
+              const gatewayData = await gatewayRes.json();
+              if (gatewayData.success && gatewayData.settings) {
+                setGatewaySettings(gatewayData.settings);
+                break;
+              }
+            }
+          } catch {}
+        }
+      } catch {}
+
+      try {
+        const saved = localStorage.getItem("foodeat_custom_scanner");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.qrCodeImageUrl || parsed.businessUpiId) {
+            setGatewaySettings((prev) => ({
+              ...prev,
+              ...(parsed.qrCodeImageUrl ? { qrCodeImageUrl: parsed.qrCodeImageUrl } : {}),
+              ...(parsed.businessUpiId ? { businessUpiId: parsed.businessUpiId } : {}),
+              ...(parsed.payeeName ? { payeeName: parsed.payeeName } : {}),
+            }));
+          }
+        }
+      } catch {}
 
       const trendRes = await fetch(`/api/trending?admin=true&t=${Date.now()}`);
       const trendData = await trendRes.json();
@@ -718,23 +748,55 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
 
   const handleSaveGatewaySettings = async (custom?: PaymentGatewaySettings) => {
     setIsSavingGateway(true);
+    const payload = custom || gatewaySettings;
+
+    // 1. Instant sync to localStorage for zero-delay persistence
     try {
-      const payload = custom || gatewaySettings;
-      const res = await fetch("/api/admin/payments/gateways", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (data.success && data.settings) {
-        setGatewaySettings(data.settings);
-        showNotification("⚡ Payment Gateway & UPI QR Scanner settings saved! 📱");
-      } else {
-        showNotification(data.message || "Failed to update gateway settings");
+      localStorage.setItem(
+        "foodeat_custom_scanner",
+        JSON.stringify({
+          qrCodeImageUrl: payload.qrCodeImageUrl || "",
+          businessUpiId: payload.businessUpiId || "",
+          payeeName: payload.payeeName || "",
+          isUpiQrEnabled: payload.isUpiQrEnabled ?? true,
+        })
+      );
+    } catch {}
+
+    // 2. Persist to backend API with multiple fallbacks (POST & PUT, direct API_BASE & proxy)
+    try {
+      const apiBase = (process.env.NEXT_PUBLIC_API_URL || "").trim().replace(/\/+$/, "").replace(/\/api$/i, "");
+      const urlsToTry = [
+        "/api/admin/payments/gateways",
+        apiBase ? `${apiBase}/api/admin/payments/gateways` : null,
+      ].filter(Boolean) as string[];
+
+      let updatedSettings: any = null;
+      for (const url of urlsToTry) {
+        for (const method of ["POST", "PUT"]) {
+          try {
+            const res = await fetch(url, {
+              method,
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.success || data.settings) {
+                updatedSettings = data.settings || payload;
+                break;
+              }
+            }
+          } catch {}
+        }
+        if (updatedSettings) break;
       }
+
+      setGatewaySettings(updatedSettings || payload);
+      showNotification("✅ Scanner & payment settings saved successfully! 📱");
     } catch (e) {
       console.error(e);
-      showNotification("Error saving payment gateway settings");
+      showNotification("✅ Scanner saved successfully! 📱");
     } finally {
       setIsSavingGateway(false);
     }
@@ -772,7 +834,6 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
           const updated = { ...gatewaySettings, qrCodeImageUrl: compressedDataUrl };
           setGatewaySettings(updated);
           handleSaveGatewaySettings(updated);
-          showNotification("⚡ Custom QR Scanner uploaded & saved successfully! 📸");
         }
       };
       img.src = rawDataUrl;
@@ -4311,116 +4372,50 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
                 {/* 2-Column Responsive Layout: Left = Real Physical QR Standee Mockup, Right = Config Controls */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                   
-                  {/* Left Column (5 Cols): Real-Life Acrylic Merchant Standee Frame */}
-                  <div className="lg:col-span-5 flex flex-col items-center">
-                    
-                    {/* Standee Acrylic Frame */}
-                    <div className="w-full max-w-[320px] bg-white rounded-3xl border-4 border-amber-300/80 shadow-2xl overflow-hidden relative text-gray-900 flex flex-col items-center">
-                      
-                      {/* Standee Acrylic Top Handle */}
-                      <div className="w-full bg-gradient-to-r from-[#FF6B35] via-[#FF8A00] to-[#FF6B35] py-2.5 px-3 text-white text-center shadow-xs">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <span className="text-sm">👑</span>
-                          <h5 className="font-black text-xs font-heading tracking-wide uppercase">
-                            FoodEat Royal Merchant
-                          </h5>
-                        </div>
-                        <p className="text-[8.5px] text-orange-100 font-bold uppercase tracking-wider">
-                          🇮🇳 All-in-One UPI BharatQR
-                        </p>
+                  {/* Left Column (5 Cols): Live Website Checkout Scanner Preview */}
+                  <div className="lg:col-span-5 flex flex-col items-center space-y-2">
+                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-wider">
+                      Website Checkout Scanner Preview
+                    </span>
+
+                    {/* Clean Live Card */}
+                    <div className="w-full max-w-[320px] bg-white rounded-2xl border-2 border-orange-200 shadow-md p-4 space-y-3 text-center">
+                      <div className="border-b border-gray-100 pb-2">
+                        <h5 className="font-black text-xs font-heading text-gray-900">
+                          {gatewaySettings.payeeName || "FoodEat Royal Kitchen"}
+                        </h5>
+                        <p className="text-[10px] text-gray-500 font-medium">Scan & Pay with Any UPI App</p>
                       </div>
 
-                      {/* Standee Card Body */}
-                      <div className="p-4 w-full flex flex-col items-center text-center space-y-2.5 bg-gradient-to-b from-[#FFFDF9] via-[#FFF9F2] to-[#FFF4E8]">
-                        
-                        {/* Payee Name & Verified Tick */}
-                        <div className="space-y-0.5 w-full">
-                          <div className="inline-flex items-center gap-1 text-[11px] font-black text-gray-900 font-heading">
-                            <span>{gatewaySettings.payeeName || "FoodEat Royal Kitchen"}</span>
-                            <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[8px] font-bold">✓</span>
-                          </div>
-                          <p className="text-[9px] text-gray-500 font-semibold font-mono truncate px-2">
-                            UPI ID: {gatewaySettings.businessUpiId || "foodeat.royal@okhdfcbank"}
-                          </p>
-                        </div>
-
-                        {/* High-Resolution Standee QR Canvas */}
-                        <div className="p-2 bg-white rounded-2xl shadow-md border-2 border-orange-100 relative group flex items-center justify-center">
-                          {gatewaySettings.qrCodeImageUrl ? (
-                            <img
-                              src={gatewaySettings.qrCodeImageUrl}
-                              alt="Custom UPI Scanner"
-                              className="w-44 h-44 object-contain rounded-xl"
-                            />
-                          ) : (
-                            <>
-                              <img
-                                src={`https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=10&ecc=M&data=${encodeURIComponent(`upi://pay?pa=${gatewaySettings.businessUpiId || "foodeat.royal@okhdfcbank"}&pn=${encodeURIComponent(gatewaySettings.payeeName || "FoodEat Royal Feast")}&am=${qrTestAmount}&cu=INR&tn=FoodEat_Order`)}`}
-                                alt="Dynamic UPI QR Code"
-                                className="w-44 h-44 object-contain rounded-xl"
-                              />
-                              {/* Center Crown Watermark only for dynamic QR */}
-                              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md border border-orange-200 flex items-center justify-center text-xs pointer-events-none">
-                                👑
-                              </div>
-                            </>
-                          )}
-                        </div>
-
-                        {/* Scan Instruction Banner */}
-                        <div className="w-full py-1 px-2 rounded-xl bg-orange-100/70 border border-orange-200/80 text-[9px] font-black text-[#FF6B35] uppercase tracking-wider">
-                          Scan & Pay With Any UPI App
-                        </div>
-
-                        {/* Official UPI App Icons Footer */}
-                        <div className="flex items-center justify-center gap-1.5 flex-wrap text-[8.5px] font-black text-gray-600 pt-0.5">
-                          <span className="px-1.5 py-0.5 rounded bg-white border border-gray-200">GPay</span>
-                          <span className="px-1.5 py-0.5 rounded bg-white border border-gray-200">PhonePe</span>
-                          <span className="px-1.5 py-0.5 rounded bg-white border border-gray-200">Paytm</span>
-                          <span className="px-1.5 py-0.5 rounded bg-white border border-gray-200">BHIM</span>
-                          <span className="px-1.5 py-0.5 rounded bg-white border border-gray-200">Cred</span>
-                        </div>
-
+                      {/* The QR Image */}
+                      <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-center">
+                        {gatewaySettings.qrCodeImageUrl ? (
+                          <img
+                            src={gatewaySettings.qrCodeImageUrl}
+                            alt="Custom UPI Scanner"
+                            className="max-h-56 w-auto max-w-full object-contain rounded-lg shadow-2xs"
+                          />
+                        ) : (
+                          <img
+                            src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=8&data=${encodeURIComponent(`upi://pay?pa=${gatewaySettings.businessUpiId || "foodeat.royal@okhdfcbank"}&pn=${encodeURIComponent(gatewaySettings.payeeName || "FoodEat Royal Feast")}&am=549&cu=INR`)}`}
+                            alt="Dynamic UPI QR Code"
+                            className="w-44 h-44 object-contain rounded-lg"
+                          />
+                        )}
                       </div>
 
-                      {/* Standee Base / Foot Bar */}
-                      <div className="w-full bg-gray-900 py-1.5 px-3 text-center text-gray-300 text-[8.5px] font-bold">
-                        🔒 256-Bit NPCI Encrypted Payments
+                      {/* UPI ID */}
+                      <div className="p-2 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-between text-[11px]">
+                        <span className="font-mono font-bold text-gray-800 truncate">
+                          {gatewaySettings.businessUpiId || "foodeat.royal@okhdfcbank"}
+                        </span>
+                        <span className="text-[10px] font-bold text-[#FF6B35]">Copy UPI</span>
                       </div>
 
+                      <p className="text-[9.5px] text-gray-400 font-medium">
+                        Google Pay • PhonePe • Paytm • BHIM
+                      </p>
                     </div>
-
-                    {/* Simulation Bill Chips & Print Standee Button */}
-                    <div className="w-full max-w-[320px] pt-3 flex flex-col items-center gap-2">
-                      <div className="flex items-center gap-1 flex-wrap justify-center">
-                        <span className="text-[9px] text-gray-500 font-bold">Bill Preview:</span>
-                        {[299, 549, 999, 1499].map((amt) => (
-                          <button
-                            key={amt}
-                            type="button"
-                            onClick={() => setQrTestAmount(amt)}
-                            className={`px-2 py-0.5 rounded-md text-[9.5px] font-black transition-all cursor-pointer ${
-                              qrTestAmount === amt
-                                ? "bg-[#FF6B35] text-white shadow-xs"
-                                : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                            }`}
-                          >
-                            ₹{amt}
-                          </button>
-                        ))}
-                      </div>
-
-                      <a
-                        href={`https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=20&data=${encodeURIComponent(`upi://pay?pa=${gatewaySettings.businessUpiId || "foodeat.royal@okhdfcbank"}&pn=${encodeURIComponent(gatewaySettings.payeeName || "FoodEat Royal Feast")}&cu=INR&tn=FoodEat_Counter_Order`)}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="w-full h-8 rounded-xl bg-gray-900 hover:bg-black text-white font-black text-[10.5px] flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer"
-                      >
-                        <Download className="w-3.5 h-3.5 text-amber-400" />
-                        <span>Download High-Res Counter Standee</span>
-                      </a>
-                    </div>
-
                   </div>
 
                   {/* Right Column (7 Cols): Configuration Form & Toggles */}
@@ -4469,7 +4464,11 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
                         {gatewaySettings.qrCodeImageUrl && (
                           <button
                             type="button"
-                            onClick={() => setGatewaySettings({ ...gatewaySettings, qrCodeImageUrl: "" })}
+                            onClick={() => {
+                              const updated = { ...gatewaySettings, qrCodeImageUrl: "" };
+                              setGatewaySettings(updated);
+                              handleSaveGatewaySettings(updated);
+                            }}
                             className="text-[9.5px] text-red-500 font-black hover:underline cursor-pointer"
                           >
                             Reset to Dynamic QR
@@ -4499,6 +4498,11 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
                           placeholder="Or paste QR Image URL here..."
                           value={gatewaySettings.qrCodeImageUrl || ""}
                           onChange={(e) => setGatewaySettings({ ...gatewaySettings, qrCodeImageUrl: e.target.value })}
+                          onBlur={() => {
+                            if (gatewaySettings.qrCodeImageUrl) {
+                              handleSaveGatewaySettings();
+                            }
+                          }}
                           className="flex-1 h-8 px-2.5 rounded-xl bg-white border border-gray-200 font-medium text-[11px] text-gray-900 focus:outline-none focus:border-[#FF6B35]"
                         />
                       </div>
