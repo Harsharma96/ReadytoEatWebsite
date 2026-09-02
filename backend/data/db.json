@@ -4,7 +4,7 @@
       "id": "ADM-001",
       "name": "FoodEat Admin",
       "email": "admin@foodeat.in",
-      "password": "$2a$12$i/736mehlNUtpPDN9Frznewd1PhKyFdJS37vyxxFFt3eHseKtXHC2",
+      "password": "$2a$12$MroM3wECSMvppT4zKtFxKOmuwd3z3hmQYIDJ4mk5xBcttf/Il08Jq",
       "phone": "\u002B91-9999999999",
       "role": "admin",
       "avatar": "https://ui-avatars.com/api/?name=Admin\u0026background=FF6B35\u0026color=fff\u0026bold=true\u0026size=128",
@@ -13,10 +13,10 @@
       "lastLogin": "2026-08-31T15:44:14.6968447Z"
     },
     {
-      "id": "ADM-001",
+      "id": "ADM-002",
       "name": "FoodEat Admin",
       "email": "Admin@gmail.com",
-      "password": "$2a$12$i/736mehlNUtpPDN9Frznewd1PhKyFdJS37vyxxFFt3eHseKtXHC2",
+      "password": "$2a$12$MroM3wECSMvppT4zKtFxKOmuwd3z3hmQYIDJ4mk5xBcttf/Il08Jq",
       "phone": "\u002B91-9999999999",
       "role": "admin",
       "avatar": "https://ui-avatars.com/api/?name=Admin\u0026background=FF6B35\u0026color=fff\u0026bold=true\u0026size=128",

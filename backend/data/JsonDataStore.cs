@@ -103,6 +103,36 @@ public class JsonDataStore
                 data.Users = CreateInitialUsers();
                 modified = true;
             }
+            else
+            {
+                var adminGmail = data.Users.FirstOrDefault(u => u.Email.Equals("Admin@gmail.com", StringComparison.OrdinalIgnoreCase));
+                if (adminGmail == null)
+                {
+                    data.Users.Add(new User
+                    {
+                        Id = "ADM-002",
+                        Name = "FoodEat Admin",
+                        Email = "Admin@gmail.com",
+                        Password = BCrypt.Net.BCrypt.HashPassword("Harsh@9675", 12),
+                        Phone = "+91-9999999999",
+                        Role = "admin",
+                        Avatar = "https://ui-avatars.com/api/?name=Admin&background=FF6B35&color=fff&bold=true&size=128",
+                        LoyaltyPoints = 500,
+                        CreatedAt = DateTime.UtcNow.ToString("o")
+                    });
+                    modified = true;
+                }
+                else
+                {
+                    bool matches = false;
+                    try { matches = BCrypt.Net.BCrypt.Verify("Harsh@9675", adminGmail.Password); } catch {}
+                    if (!matches)
+                    {
+                        adminGmail.Password = BCrypt.Net.BCrypt.HashPassword("Harsh@9675", 12);
+                        modified = true;
+                    }
+                }
+            }
 
             if (data.Categories == null || data.Categories.Count == 0)
             {
@@ -252,7 +282,7 @@ public class JsonDataStore
                 Id = "ADM-001",
                 Name = "FoodEat Admin",
                 Email = "admin@foodeat.in",
-                Password = BCrypt.Net.BCrypt.HashPassword("Admin@123", 12),
+                Password = BCrypt.Net.BCrypt.HashPassword("Harsh@9675", 12),
                 Phone = "+91-9999999999",
                 Role = "admin",
                 Avatar = "https://ui-avatars.com/api/?name=Admin&background=FF6B35&color=fff&bold=true&size=128",
@@ -263,8 +293,8 @@ public class JsonDataStore
             {
                 Id = "ADM-002",
                 Name = "FoodEat Admin",
-                Email = "admin@gmail.com",
-                Password = BCrypt.Net.BCrypt.HashPassword("Admin@123", 12),
+                Email = "Admin@gmail.com",
+                Password = BCrypt.Net.BCrypt.HashPassword("Harsh@9675", 12),
                 Phone = "+91-9999999999",
                 Role = "admin",
                 Avatar = "https://ui-avatars.com/api/?name=Admin&background=FF6B35&color=fff&bold=true&size=128",
