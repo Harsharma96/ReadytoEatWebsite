@@ -20,7 +20,10 @@ import {
   KeyRound,
 } from "lucide-react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000")
+  .trim()
+  .replace(/\/+$/, "")
+  .replace(/\/api$/i, "");
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -86,30 +89,49 @@ export default function AdminLoginPage() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/admin/login`, {
+      const res = await fetch(`${API_BASE}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
       });
-      const data = await res.json();
 
-      if (data.success) {
+      let data: any = null;
+      try {
+        data = await res.json();
+      } catch {
+        // Response was not JSON (e.g. HTML 404 or 502 error page)
+      }
+
+      if (res.ok && data?.success) {
         setSuccess(data.message || "Access granted! Redirecting...");
         localStorage.setItem("foodeat_admin_token", data.token);
         localStorage.setItem("foodeat_admin_user", JSON.stringify(data.user));
         sessionStorage.setItem("foodeat_admin_auth", "true");
         setTimeout(() => router.replace("/admin"), 800);
       } else {
-        setError(data.message || "Authentication failed.");
-        if (data.lockedUntil) {
+        const fallbackMsg =
+          res.status === 401
+            ? "Invalid admin email or password."
+            : res.status === 403
+            ? "Access denied. Administrator privileges required."
+            : res.status === 404
+            ? "Admin login service endpoint not found (404)."
+            : res.status === 429
+            ? "Too many failed attempts. Please try again later."
+            : res.status >= 500
+            ? "Server error. Please try again in a few moments."
+            : "Authentication failed. Please check your credentials.";
+
+        setError(data?.message || fallbackMsg);
+        if (data?.lockedUntil) {
           const secsLeft = Math.ceil((data.lockedUntil - Date.now()) / 1000);
           setLockoutTimer(secsLeft);
         }
-        const match = data.message?.match(/(\d+) attempt/);
+        const match = data?.message?.match(/(\d+) attempt/);
         if (match) setAttemptsLeft(parseInt(match[1]));
       }
     } catch {
-      setError("Network error. Please check backend connection.");
+      setError("Unable to connect to server. Please check your internet connection.");
     } finally {
       setLoading(false);
     }
