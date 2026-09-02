@@ -113,13 +113,14 @@ export const CheckoutModal: React.FC = () => {
       try {
         const res = await fetch(`/api/payments/config?t=${Date.now()}`);
         const data = await res.json();
-        if (data.success && data.config) {
-          setPaymentConfig(data.config);
-          if (data.config.isUpiQrEnabled) {
+        const config = data.config || (data.success !== undefined ? data : null);
+        if (config) {
+          setPaymentConfig(config);
+          if (config.isUpiQrEnabled) {
             setPaymentMethod("upi");
-          } else if (data.config.isOnlineGatewayEnabled) {
+          } else if (config.isOnlineGatewayEnabled) {
             setPaymentMethod("card");
-          } else if (data.config.isCodEnabled) {
+          } else if (config.isCodEnabled) {
             setPaymentMethod("cod");
           }
         }
@@ -830,25 +831,26 @@ export const CheckoutModal: React.FC = () => {
 
                     {/* QR Code Canvas Frame */}
                     <div className="flex flex-col items-center justify-center p-3 bg-white rounded-2xl border-2 border-orange-100 shadow-md relative group">
-                      <div className="relative p-2 bg-white rounded-xl">
+                      <div className="relative p-2 bg-white rounded-xl flex items-center justify-center">
                         {paymentConfig.qrCodeImageUrl ? (
                           <img
                             src={paymentConfig.qrCodeImageUrl}
                             alt="Merchant UPI Scanner"
-                            className="w-44 h-44 sm:w-48 sm:h-48 object-contain rounded-lg shadow-2xs"
+                            className="w-48 h-48 sm:w-56 sm:h-56 object-contain rounded-lg shadow-xs"
                           />
                         ) : (
-                          <img
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=10&data=${encodeURIComponent(`upi://pay?pa=${paymentConfig.businessUpiId || "foodeat.royal@okhdfcbank"}&pn=${encodeURIComponent(paymentConfig.payeeName || "FoodEat Royal Feast")}&am=${finalTotal || 549}&cu=INR&tn=FoodEat_Order`)}`}
-                            alt="UPI QR Scanner"
-                            className="w-44 h-44 sm:w-48 sm:h-48 object-contain rounded-lg shadow-2xs"
-                          />
+                          <>
+                            <img
+                              src={`https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=10&ecc=M&data=${encodeURIComponent(`upi://pay?pa=${paymentConfig.businessUpiId || "foodeat.royal@okhdfcbank"}&pn=${encodeURIComponent(paymentConfig.payeeName || "FoodEat Royal Feast")}&am=${finalTotal || 549}&cu=INR&tn=FoodEat_Order`)}`}
+                              alt="UPI QR Scanner"
+                              className="w-44 h-44 sm:w-48 sm:h-48 object-contain rounded-lg shadow-2xs"
+                            />
+                            {/* Center Verified Emblem only for dynamic QR */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md border border-orange-200 flex items-center justify-center text-xs pointer-events-none">
+                              👑
+                            </div>
+                          </>
                         )}
-
-                        {/* Center Verified Emblem */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white shadow-md border border-orange-200 flex items-center justify-center text-sm pointer-events-none">
-                          👑
-                        </div>
                       </div>
 
                       {/* Scan & Pay Guidance */}

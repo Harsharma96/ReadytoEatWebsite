@@ -743,11 +743,39 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
   const handleQrImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     const reader = new FileReader();
     reader.onload = (event) => {
-      const result = event.target?.result as string;
-      setGatewaySettings((prev) => ({ ...prev, qrCodeImageUrl: result }));
-      showNotification("📸 Custom QR Scanner image selected! Tap 'Save' to apply.");
+      const rawDataUrl = event.target?.result as string;
+      const img = new Image();
+      img.onload = () => {
+        // Compress to max 600x600 to prevent payload errors and optimize speed
+        const maxDim = 600;
+        let width = img.width;
+        let height = img.height;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.85);
+          const updated = { ...gatewaySettings, qrCodeImageUrl: compressedDataUrl };
+          setGatewaySettings(updated);
+          handleSaveGatewaySettings(updated);
+          showNotification("⚡ Custom QR Scanner uploaded & saved successfully! 📸");
+        }
+      };
+      img.src = rawDataUrl;
     };
     reader.readAsDataURL(file);
   };
@@ -4317,7 +4345,7 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
                         </div>
 
                         {/* High-Resolution Standee QR Canvas */}
-                        <div className="p-2 bg-white rounded-2xl shadow-md border-2 border-orange-100 relative group">
+                        <div className="p-2 bg-white rounded-2xl shadow-md border-2 border-orange-100 relative group flex items-center justify-center">
                           {gatewaySettings.qrCodeImageUrl ? (
                             <img
                               src={gatewaySettings.qrCodeImageUrl}
@@ -4325,17 +4353,18 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
                               className="w-44 h-44 object-contain rounded-xl"
                             />
                           ) : (
-                            <img
-                              src={`https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=10&data=${encodeURIComponent(`upi://pay?pa=${gatewaySettings.businessUpiId || "foodeat.royal@okhdfcbank"}&pn=${encodeURIComponent(gatewaySettings.payeeName || "FoodEat Royal Feast")}&am=${qrTestAmount}&cu=INR&tn=FoodEat_Order`)}`}
-                              alt="Dynamic UPI QR Code"
-                              className="w-44 h-44 object-contain rounded-xl"
-                            />
+                            <>
+                              <img
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=10&ecc=M&data=${encodeURIComponent(`upi://pay?pa=${gatewaySettings.businessUpiId || "foodeat.royal@okhdfcbank"}&pn=${encodeURIComponent(gatewaySettings.payeeName || "FoodEat Royal Feast")}&am=${qrTestAmount}&cu=INR&tn=FoodEat_Order`)}`}
+                                alt="Dynamic UPI QR Code"
+                                className="w-44 h-44 object-contain rounded-xl"
+                              />
+                              {/* Center Crown Watermark only for dynamic QR */}
+                              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md border border-orange-200 flex items-center justify-center text-xs pointer-events-none">
+                                👑
+                              </div>
+                            </>
                           )}
-
-                          {/* Center Crown Watermark */}
-                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-md border border-orange-200 flex items-center justify-center text-xs pointer-events-none">
-                            👑
-                          </div>
                         </div>
 
                         {/* Scan Instruction Banner */}

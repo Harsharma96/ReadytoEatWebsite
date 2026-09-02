@@ -21,7 +21,22 @@ public class PaymentsController : ControllerBase
     public async Task<IActionResult> GetPublicPaymentConfig()
     {
         var config = await _paymentService.GetPublicPaymentConfigAsync();
-        return Ok(config);
+        return Ok(new
+        {
+            success = true,
+            config,
+            isUpiQrEnabled = config.IsUpiQrEnabled,
+            isOnlineGatewayEnabled = config.IsOnlineGatewayEnabled,
+            isCodEnabled = config.IsCodEnabled,
+            isCardOnDeliveryEnabled = config.IsCardOnDeliveryEnabled,
+            businessUpiId = config.BusinessUpiId,
+            payeeName = config.PayeeName,
+            qrCodeImageUrl = config.QrCodeImageUrl,
+            upiInstructions = config.UpiInstructions,
+            mode = config.Mode,
+            razorpayKeyId = config.RazorpayKeyId,
+            stripePublishableKey = config.StripePublishableKey
+        });
     }
 
     [HttpPost("api/payments/process")]
