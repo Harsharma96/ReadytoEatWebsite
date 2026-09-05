@@ -115,9 +115,20 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// ==================== 4.5. PERFORMANCE (COMPRESSION & CACHING) ====================
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.BrotliCompressionProvider>();
+    options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.GzipCompressionProvider>();
+});
+builder.Services.AddResponseCaching();
+
 var app = builder.Build();
 
 // ==================== 5. HTTP REQUEST PIPELINE ====================
+
+app.UseResponseCompression();
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
@@ -127,6 +138,7 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseCors("FoodEatCorsPolicy");
+app.UseResponseCaching();
 
 app.UseAuthentication();
 app.UseAuthorization();

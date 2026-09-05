@@ -1,40 +1,73 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
 export const LiquidBlobSystem: React.FC = () => {
-  const [scrollY, setScrollY] = useState(0);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const blob1Ref = useRef<HTMLDivElement>(null);
+  const blob2Ref = useRef<HTMLDivElement>(null);
+  const blob3Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Disable heavy mouse tracking on touch devices to conserve battery and guarantee 60fps
+    const isTouch = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let scrollY = window.scrollY || 0;
+    let isTicking = false;
+    let rafId: number;
+
+    const updateTransforms = () => {
+      if (blob1Ref.current) {
+        blob1Ref.current.style.transform = `translate3d(${mouseX * 0.8}px, ${mouseY * 0.8 - scrollY * 0.15}px, 0) rotate(${scrollY * 0.05}deg)`;
+      }
+      if (blob2Ref.current) {
+        blob2Ref.current.style.transform = `translate3d(${-mouseX * 0.7}px, ${-mouseY * 0.7 - scrollY * 0.1}px, 0) rotate(${-scrollY * 0.04}deg)`;
+      }
+      if (blob3Ref.current) {
+        blob3Ref.current.style.transform = `translate3d(${mouseX * 0.9}px, ${mouseY * 0.9}px, 0) rotate(${scrollY * 0.03}deg)`;
+      }
+      isTicking = false;
+    };
+
+    const requestTick = () => {
+      if (!isTicking) {
+        isTicking = true;
+        rafId = requestAnimationFrame(updateTransforms);
+      }
+    };
+
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      scrollY = window.scrollY;
+      requestTick();
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 40;
-      const y = (e.clientY / window.innerHeight - 0.5) * 40;
-      setMousePos({ x, y });
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 36;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 36;
+      requestTick();
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    if (!isTouch) {
+      window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    }
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("mousemove", handleMouseMove);
+      if (!isTouch) {
+        window.removeEventListener("mousemove", handleMouseMove);
+      }
+      cancelAnimationFrame(rafId);
     };
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      
-      {/* LAYER 1: Giant Morphing G-Shape Liquid Blob #1 (Top / Hero - Orange Coral) */}
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
+      {/* LAYER 1: Morphing Liquid Blob #1 (Top / Hero - Orange Coral) */}
       <div
-        className="absolute -top-20 -left-20 w-[650px] h-[650px] opacity-45 filter blur-[60px] transition-transform duration-700 ease-out"
-        style={{
-          transform: `translate3d(${mousePos.x * 0.8}px, ${mousePos.y * 0.8 - scrollY * 0.15}px, 0) rotate(${scrollY * 0.05}deg)`,
-        }}
+        ref={blob1Ref}
+        className="absolute -top-20 -left-20 w-[600px] h-[600px] opacity-40 filter blur-[45px] transition-transform duration-300 ease-out will-change-transform"
       >
         <svg viewBox="0 0 500 500" className="w-full h-full">
           <defs>
@@ -47,7 +80,7 @@ export const LiquidBlobSystem: React.FC = () => {
           <path fill="url(#blobG1)">
             <animate
               attributeName="d"
-              dur="10s"
+              dur="12s"
               repeatCount="indefinite"
               values="
                 M 250,50 C 370,50 450,130 450,250 C 450,370 370,450 250,450 C 130,450 60,380 60,260 C 60,170 140,80 230,80 C 290,80 340,120 340,170 C 340,210 310,240 270,240 C 230,240 200,210 200,180 C 200,150 160,160 140,190 C 110,240 140,360 250,360 C 330,360 370,300 370,240 C 370,180 330,120 250,120 Z;
@@ -60,12 +93,10 @@ export const LiquidBlobSystem: React.FC = () => {
         </svg>
       </div>
 
-      {/* LAYER 2: Giant Morphing G-Shape Liquid Blob #2 (Mid Page - Fresh Green / Lime) */}
+      {/* LAYER 2: Morphing Liquid Blob #2 (Mid Page - Fresh Green / Lime) */}
       <div
-        className="absolute top-[35%] -right-20 w-[600px] h-[600px] opacity-40 filter blur-[65px] transition-transform duration-700 ease-out"
-        style={{
-          transform: `translate3d(${-mousePos.x * 0.7}px, ${-mousePos.y * 0.7 - scrollY * 0.1}px, 0) rotate(${-scrollY * 0.04}deg)`,
-        }}
+        ref={blob2Ref}
+        className="absolute top-[35%] -right-20 w-[550px] h-[550px] opacity-35 filter blur-[50px] transition-transform duration-300 ease-out will-change-transform"
       >
         <svg viewBox="0 0 500 500" className="w-full h-full">
           <defs>
@@ -78,7 +109,7 @@ export const LiquidBlobSystem: React.FC = () => {
           <path fill="url(#blobG2)">
             <animate
               attributeName="d"
-              dur="10s"
+              dur="12s"
               repeatCount="indefinite"
               values="
                 M 230,60 C 350,40 440,110 450,220 C 460,340 390,440 270,450 C 150,460 70,390 60,280 C 50,190 120,90 210,80 C 270,70 320,110 330,160 C 340,200 310,240 270,240 C 230,240 190,210 190,170 C 190,140 150,150 130,180 C 100,230 140,350 250,360 C 330,370 380,310 380,240 C 380,180 330,120 230,60 Z;
@@ -90,12 +121,10 @@ export const LiquidBlobSystem: React.FC = () => {
         </svg>
       </div>
 
-      {/* LAYER 3: Giant Morphing G-Shape Liquid Blob #3 (Bottom / Offer / Contact - Neon Pink / Coral) */}
+      {/* LAYER 3: Morphing Liquid Blob #3 (Bottom / Offer / Contact - Neon Pink / Coral) */}
       <div
-        className="absolute bottom-10 -left-16 w-[700px] h-[700px] opacity-40 filter blur-[70px] transition-transform duration-700 ease-out"
-        style={{
-          transform: `translate3d(${mousePos.x * 0.9}px, ${mousePos.y * 0.9}px, 0) rotate(${scrollY * 0.03}deg)`,
-        }}
+        ref={blob3Ref}
+        className="absolute bottom-10 -left-16 w-[600px] h-[600px] opacity-35 filter blur-[50px] transition-transform duration-300 ease-out will-change-transform"
       >
         <svg viewBox="0 0 500 500" className="w-full h-full">
           <defs>
@@ -108,7 +137,7 @@ export const LiquidBlobSystem: React.FC = () => {
           <path fill="url(#blobG3)">
             <animate
               attributeName="d"
-              dur="10s"
+              dur="12s"
               repeatCount="indefinite"
               values="
                 M 250,50 C 370,50 450,130 450,250 C 450,370 370,450 250,450 C 130,450 60,380 60,260 C 60,170 140,80 230,80 C 290,80 340,120 340,170 C 340,210 310,240 270,240 C 230,240 200,210 200,180 C 200,150 160,160 140,190 C 110,240 140,360 250,360 C 330,360 370,300 370,240 C 370,180 330,120 250,120 Z;

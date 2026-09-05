@@ -17,6 +17,7 @@ import {
   Zap
 } from "lucide-react";
 import { Product } from "@/types/product";
+import { fetchWithDeduplication, invalidateApiCache } from "@/utils/apiClient";
 
 interface TrendingDisplayItem {
   id: string;
@@ -48,10 +49,9 @@ export const PopularMarquee: React.FC = () => {
 
   // Fetch trending spotlights from API
   const fetchTrendingSpotlights = () => {
-    fetch(`/api/trending?t=${Date.now()}`)
-      .then((res) => res.json())
+    fetchWithDeduplication("/api/trending")
       .then((data) => {
-        if (data.success && Array.isArray(data.spotlights) && data.spotlights.length > 0) {
+        if (data && data.success && Array.isArray(data.spotlights) && data.spotlights.length > 0) {
           const activeSpotlights = data.spotlights.filter((s: any) => s.product && s.isActive !== false);
           const formatted: TrendingDisplayItem[] = activeSpotlights.map((s: any, idx: number) => ({
             id: s.id,
@@ -77,6 +77,7 @@ export const PopularMarquee: React.FC = () => {
 
     const handleStorage = (e: StorageEvent) => {
       if (e.key === "foodeat_menu_last_updated") {
+        invalidateApiCache("/api/trending");
         fetchTrendingSpotlights();
       }
     };

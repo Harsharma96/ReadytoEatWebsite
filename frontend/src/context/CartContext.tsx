@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Product } from "@/types/product";
+import { fetchWithDeduplication } from "@/utils/apiClient";
 
 export interface CartItem {
   product: Product;
@@ -90,10 +91,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Fetch store settings & active promo from backend
   const fetchSettingsAndPromo = () => {
-    fetch(`/api/settings?t=${Date.now()}`)
-      .then((res) => res.json())
+    fetchWithDeduplication("/api/settings")
       .then((data) => {
-        if (data.success && data.settings) {
+        if (data && data.success && data.settings) {
           setGstPercent(Number(data.settings.gstPercent) || 5);
           setIsGstEnabled(data.settings.isGstEnabled !== false);
           setTaxName(data.settings.taxName || `GST (${data.settings.gstPercent || 5}%)`);
@@ -107,10 +107,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       })
       .catch(() => {});
 
-    fetch(`/api/admin/stats?t=${Date.now()}`)
-      .then((res) => res.json())
+    fetchWithDeduplication("/api/promo")
       .then((data) => {
-        if (data.success && Array.isArray(data.promos)) {
+        if (data && data.success && Array.isArray(data.promos)) {
           const firstActive = data.promos.find((p: any) => p.isActive);
           setActivePromo(firstActive || null);
         }

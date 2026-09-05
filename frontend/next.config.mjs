@@ -12,10 +12,13 @@ const backendUrl = rawBackendUrl
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  compress: true,
+  poweredByHeader: false,
   eslint: {
     ignoreDuringBuilds: true,
   },
   images: {
+    formats: ['image/avif', 'image/webp'],
     domains: ['images.unsplash.com', 'assets.mixkit.co'],
   },
   async rewrites() {

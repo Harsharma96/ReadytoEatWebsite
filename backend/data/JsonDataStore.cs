@@ -69,6 +69,8 @@ public class JsonDataStore
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
+    private DatabaseSchema _memoryCache = new();
+
     public JsonDataStore(IConfiguration configuration, IWebHostEnvironment env)
     {
         var configuredPath = configuration["Data:DbFilePath"] ?? "data/db.json";
@@ -89,26 +91,26 @@ public class JsonDataStore
 
         if (!File.Exists(_dbFilePath))
         {
-            var initial = CreateInitialSchema();
-            SaveDataInternal(initial);
+            _memoryCache = CreateInitialSchema();
+            SaveDataInternal(_memoryCache);
         }
         else
         {
             // Verify file can be read and seeded if needed
-            var data = GetDataInternal();
+            _memoryCache = GetDataInternal();
             bool modified = false;
 
-            if (data.Users == null || data.Users.Count == 0)
+            if (_memoryCache.Users == null || _memoryCache.Users.Count == 0)
             {
-                data.Users = CreateInitialUsers();
+                _memoryCache.Users = CreateInitialUsers();
                 modified = true;
             }
             else
             {
-                var adminGmail = data.Users.FirstOrDefault(u => u.Email.Equals("Admin@gmail.com", StringComparison.OrdinalIgnoreCase));
+                var adminGmail = _memoryCache.Users.FirstOrDefault(u => u.Email.Equals("Admin@gmail.com", StringComparison.OrdinalIgnoreCase));
                 if (adminGmail == null)
                 {
-                    data.Users.Add(new User
+                    _memoryCache.Users.Add(new User
                     {
                         Id = "ADM-002",
                         Name = "FoodEat Admin",
@@ -134,51 +136,51 @@ public class JsonDataStore
                 }
             }
 
-            if (data.Categories == null || data.Categories.Count == 0)
+            if (_memoryCache.Categories == null || _memoryCache.Categories.Count == 0)
             {
-                data.Categories = CreateInitialCategories();
+                _memoryCache.Categories = CreateInitialCategories();
                 modified = true;
             }
 
-            if (data.PromoCodes == null || data.PromoCodes.Count == 0)
+            if (_memoryCache.PromoCodes == null || _memoryCache.PromoCodes.Count == 0)
             {
-                data.PromoCodes = CreateInitialPromos();
+                _memoryCache.PromoCodes = CreateInitialPromos();
                 modified = true;
             }
 
-            if (data.FeastBoxTiers == null || data.FeastBoxTiers.Count == 0)
+            if (_memoryCache.FeastBoxTiers == null || _memoryCache.FeastBoxTiers.Count == 0)
             {
-                data.FeastBoxTiers = CreateInitialFeastBoxTiers();
+                _memoryCache.FeastBoxTiers = CreateInitialFeastBoxTiers();
                 modified = true;
             }
 
-            if (data.TrendingSpotlights == null || data.TrendingSpotlights.Count == 0)
+            if (_memoryCache.TrendingSpotlights == null || _memoryCache.TrendingSpotlights.Count == 0)
             {
-                data.TrendingSpotlights = CreateInitialTrending();
+                _memoryCache.TrendingSpotlights = CreateInitialTrending();
                 modified = true;
             }
 
-            if (data.ChefSpecial == null)
+            if (_memoryCache.ChefSpecial == null)
             {
-                data.ChefSpecial = new ChefSpecialConfig();
+                _memoryCache.ChefSpecial = new ChefSpecialConfig();
                 modified = true;
             }
 
-            if (data.Settings == null)
+            if (_memoryCache.Settings == null)
             {
-                data.Settings = new StoreSettings();
+                _memoryCache.Settings = new StoreSettings();
                 modified = true;
             }
 
-            if (data.PaymentGatewaySettings == null)
+            if (_memoryCache.PaymentGatewaySettings == null)
             {
-                data.PaymentGatewaySettings = new PaymentGatewaySettings();
+                _memoryCache.PaymentGatewaySettings = new PaymentGatewaySettings();
                 modified = true;
             }
 
             if (modified)
             {
-                SaveDataInternal(data);
+                SaveDataInternal(_memoryCache);
             }
         }
     }
@@ -188,8 +190,7 @@ public class JsonDataStore
         _lock.EnterReadLock();
         try
         {
-            var schema = GetDataInternal();
-            return query(schema);
+            return query(_memoryCache);
         }
         finally
         {
@@ -202,9 +203,8 @@ public class JsonDataStore
         _lock.EnterWriteLock();
         try
         {
-            var schema = GetDataInternal();
-            updateAction(schema);
-            SaveDataInternal(schema);
+            updateAction(_memoryCache);
+            SaveDataInternal(_memoryCache);
         }
         finally
         {
@@ -217,9 +217,8 @@ public class JsonDataStore
         _lock.EnterWriteLock();
         try
         {
-            var schema = GetDataInternal();
-            var result = updateFunc(schema);
-            SaveDataInternal(schema);
+            var result = updateFunc(_memoryCache);
+            SaveDataInternal(_memoryCache);
             return result;
         }
         finally
@@ -245,8 +244,25 @@ public class JsonDataStore
 
     private void SaveDataInternal(DatabaseSchema data)
     {
-        var json = JsonSerializer.Serialize(data, _jsonOptions);
-        File.WriteAllText(_dbFilePath, json);
+        try
+        {
+            var json = JsonSerializer.Serialize(data, _jsonOptions);
+            var tempPath = _dbFilePath + ".tmp";
+            File.WriteAllText(tempPath, json);
+            File.Move(tempPath, _dbFilePath, true);
+        }
+        catch
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(data, _jsonOptions);
+                File.WriteAllText(_dbFilePath, json);
+            }
+            catch
+            {
+                // Logging can be added here
+            }
+        }
     }
 
     private DatabaseSchema CreateInitialSchema()

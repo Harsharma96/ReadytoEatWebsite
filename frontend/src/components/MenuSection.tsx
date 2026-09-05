@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { Product } from "@/types/product";
+import { fetchWithDeduplication, invalidateApiCache } from "@/utils/apiClient";
 
 const QUICK_TRENDING_CHIPS = [
   { label: "🍔 Smash Burgers", query: "Burger" },
@@ -187,19 +188,17 @@ export const MenuSection: React.FC = () => {
 
   // Fetch live products and categories from backend
   const fetchMenuData = () => {
-    fetch(`/api/products?t=${Date.now()}`)
-      .then((res) => res.json())
+    fetchWithDeduplication("/api/products")
       .then((data) => {
-        if (data.success && Array.isArray(data.products) && data.products.length > 0) {
+        if (data && data.success && Array.isArray(data.products) && data.products.length > 0) {
           setProductsList(data.products);
         }
       })
       .catch((err) => console.error("MenuSection products fetch error:", err));
 
-    fetch(`/api/categories?t=${Date.now()}`)
-      .then((res) => res.json())
+    fetchWithDeduplication("/api/categories")
       .then((data) => {
-        if (data.success && Array.isArray(data.categories) && data.categories.length > 0) {
+        if (data && data.success && Array.isArray(data.categories) && data.categories.length > 0) {
           const allOption: MenuCategoryConfig = {
             id: "All Items",
             name: "All Dishes",
@@ -227,21 +226,18 @@ export const MenuSection: React.FC = () => {
   useEffect(() => {
     fetchMenuData();
 
-    // Auto-refresh when menu changes in Admin or when user focuses window
+    // Auto-refresh when menu changes in Admin
     const handleStorage = (e: StorageEvent) => {
       if (e.key === "foodeat_menu_last_updated") {
+        invalidateApiCache("/api/products");
+        invalidateApiCache("/api/categories");
         fetchMenuData();
       }
     };
-    const handleFocus = () => {
-      fetchMenuData();
-    };
 
     window.addEventListener("storage", handleStorage);
-    window.addEventListener("focus", handleFocus);
     return () => {
       window.removeEventListener("storage", handleStorage);
-      window.removeEventListener("focus", handleFocus);
     };
   }, []);
 

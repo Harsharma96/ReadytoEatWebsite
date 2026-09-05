@@ -1,84 +1,108 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
 export const CustomCursor: React.FC = () => {
-  const [position, setPosition] = useState({ x: -100, y: -100 });
-  const [followerPos, setFollowerPos] = useState({ x: -100, y: -100 });
-  const [isHovered, setIsHovered] = useState(false);
-  const [isFoodHovered, setIsFoodHovered] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLDivElement>(null);
+  const followerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setIsVisible(true);
-      setPosition({ x: e.clientX, y: e.clientY });
+    // Only run on desktop devices with fine pointer (mouse)
+    const isDesktopPointer =
+      typeof window !== "undefined" &&
+      window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+    if (!isDesktopPointer) return;
+
+    let mouseX = -100;
+    let mouseY = -100;
+    let followerX = -100;
+    let followerY = -100;
+    let isHovered = false;
+    let isFoodHovered = false;
+    let isVisible = false;
+    let rafId: number;
+
+    const renderLoop = () => {
+      // Lerp physics spring interpolation
+      followerX += (mouseX - followerX) * 0.18;
+      followerY += (mouseY - followerY) * 0.18;
+
+      if (dotRef.current) {
+        const scale = isHovered ? 1.4 : 1.0;
+        dotRef.current.style.transform = `translate3d(${mouseX - 5}px, ${mouseY - 5}px, 0) scale(${scale})`;
+        dotRef.current.style.backgroundColor = isFoodHovered ? "#FF4D6D" : "#FF6B35";
+      }
+
+      if (followerRef.current) {
+        const offset = isFoodHovered ? 40 : 25;
+        const scale = isHovered ? 1.5 : isFoodHovered ? 1.9 : 1.0;
+        followerRef.current.style.transform = `translate3d(${followerX - offset}px, ${followerY - offset}px, 0) scale(${scale})`;
+      }
+
+      rafId = requestAnimationFrame(renderLoop);
     };
 
-    const handleMouseLeave = () => setIsVisible(false);
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
 
-    window.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseleave", handleMouseLeave);
+      if (!isVisible && containerRef.current) {
+        isVisible = true;
+        containerRef.current.style.opacity = "1";
+      }
+    };
+
+    const handleMouseLeave = () => {
+      isVisible = false;
+      if (containerRef.current) {
+        containerRef.current.style.opacity = "0";
+      }
+    };
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      
-      const isInteractive =
+      if (!target) return;
+
+      isHovered = Boolean(
         target.tagName === "BUTTON" ||
         target.tagName === "A" ||
         target.closest("button") ||
         target.closest("a") ||
-        target.classList.contains("cursor-pointer");
+        target.classList.contains("cursor-pointer")
+      );
 
-      const isFood =
+      isFoodHovered = Boolean(
         target.tagName === "IMG" ||
         target.closest(".group") !== null ||
-        target.closest(".glass-card") !== null;
-
-      setIsHovered(Boolean(isInteractive));
-      setIsFoodHovered(Boolean(isFood));
+        target.closest(".glass-card") !== null
+      );
     };
 
-    window.addEventListener("mouseover", handleMouseOver);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    document.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("mouseover", handleMouseOver, { passive: true });
+
+    rafId = requestAnimationFrame(renderLoop);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseleave", handleMouseLeave);
       window.removeEventListener("mouseover", handleMouseOver);
+      cancelAnimationFrame(rafId);
     };
   }, []);
 
-  // Liquid Physics spring smoothing
-  useEffect(() => {
-    let animationFrameId: number;
-
-    const follow = () => {
-      setFollowerPos((prev) => ({
-        x: prev.x + (position.x - prev.x) * 0.16,
-        y: prev.y + (position.y - prev.y) * 0.16,
-      }));
-      animationFrameId = requestAnimationFrame(follow);
-    };
-
-    animationFrameId = requestAnimationFrame(follow);
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [position]);
-
-  if (!isVisible) return null;
-
   return (
-    <div className="hidden lg:block pointer-events-none fixed inset-0 z-[9999] overflow-hidden">
-      
+    <div
+      ref={containerRef}
+      className="hidden lg:block pointer-events-none fixed inset-0 z-[99999] overflow-hidden select-none opacity-0 transition-opacity duration-200"
+    >
       {/* Morphing Liquid Follower Blob */}
       <div
-        className="absolute transition-transform duration-75 ease-out pointer-events-none"
-        style={{
-          transform: `translate3d(${followerPos.x - (isFoodHovered ? 40 : 25)}px, ${
-            followerPos.y - (isFoodHovered ? 40 : 25)
-          }px, 0) scale(${isHovered ? 1.6 : isFoodHovered ? 2.0 : 1})`,
-          width: isFoodHovered ? "80px" : "50px",
-          height: isFoodHovered ? "80px" : "50px",
-        }}
+        ref={followerRef}
+        className="absolute pointer-events-none will-change-transform w-[50px] h-[50px]"
       >
         <svg viewBox="0 0 100 100" className="w-full h-full filter blur-[2px] opacity-75">
           <defs>
@@ -104,12 +128,8 @@ export const CustomCursor: React.FC = () => {
 
       {/* Center Precision Glow Dot */}
       <div
-        className="absolute w-2.5 h-2.5 rounded-full pointer-events-none transition-transform duration-75 ease-out"
-        style={{
-          transform: `translate3d(${position.x - 5}px, ${position.y - 5}px, 0) scale(${isHovered ? 1.4 : 1})`,
-          backgroundColor: isFoodHovered ? "#FF4D6D" : "#FF6B35",
-          boxShadow: "0 0 12px rgba(255, 107, 53, 0.9)",
-        }}
+        ref={dotRef}
+        className="absolute w-2.5 h-2.5 rounded-full pointer-events-none will-change-transform bg-[#FF6B35] shadow-[0_0_12px_rgba(255,107,53,0.9)]"
       />
     </div>
   );

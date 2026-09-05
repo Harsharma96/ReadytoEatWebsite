@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { PRODUCTS } from "@/data/products";
+import { fetchWithDeduplication, invalidateApiCache } from "@/utils/apiClient";
 import { 
   Sparkles, 
   ArrowRight, 
@@ -15,15 +16,16 @@ import {
 
 export const HeroSection: React.FC = () => {
   const { addToCart, openQuickView } = useCart();
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const spotlightRef = React.useRef<HTMLDivElement>(null);
+  const sauceRef = React.useRef<HTMLDivElement>(null);
+  const dishCardRef = React.useRef<HTMLDivElement>(null);
   const [isPizzaHovered, setIsPizzaHovered] = useState(false);
   const [productsList, setProductsList] = useState(PRODUCTS);
 
   const fetchHeroProducts = () => {
-    fetch(`/api/products?t=${Date.now()}`)
-      .then((res) => res.json())
+    fetchWithDeduplication("/api/products")
       .then((data) => {
-        if (data.success && Array.isArray(data.products) && data.products.length >= 2) {
+        if (data && data.success && Array.isArray(data.products) && data.products.length >= 2) {
           setProductsList(data.products);
         }
       })
@@ -35,31 +37,36 @@ export const HeroSection: React.FC = () => {
 
     const handleStorage = (e: StorageEvent) => {
       if (e.key === "foodeat_menu_last_updated") {
+        invalidateApiCache("/api/products");
         fetchHeroProducts();
       }
     };
-    const handleFocus = () => {
-      fetchHeroProducts();
-    };
 
     window.addEventListener("storage", handleStorage);
-    window.addEventListener("focus", handleFocus);
     return () => {
       window.removeEventListener("storage", handleStorage);
-      window.removeEventListener("focus", handleFocus);
     };
   }, []);
 
   const burgerProduct = productsList.find((p) => p.category?.toLowerCase().includes("burger")) || productsList[0] || PRODUCTS[0];
   const pizzaProduct = productsList.find((p) => p.category?.toLowerCase().includes("pizza")) || productsList[1] || PRODUCTS[1];
 
-  // Mouse Parallax Physics
+  // 60fps Hardware-Accelerated Mouse Parallax (Zero Component Re-renders)
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const { clientX, clientY, currentTarget } = e;
     const { width, height, left, top } = currentTarget.getBoundingClientRect();
     const x = (clientX - left) / width - 0.5;
     const y = (clientY - top) / height - 0.5;
-    setMousePos({ x, y });
+
+    if (spotlightRef.current) {
+      spotlightRef.current.style.transform = `translate3d(${x * 120}px, ${y * 120}px, 0)`;
+    }
+    if (sauceRef.current) {
+      sauceRef.current.style.transform = `translate(-50%, -50%) translate3d(${x * 25}px, ${y * 25}px, 0)`;
+    }
+    if (dishCardRef.current) {
+      dishCardRef.current.style.transform = `rotateY(${x * 14}deg) rotateX(${-y * 14}deg)`;
+    }
   };
 
   return (
@@ -74,9 +81,9 @@ export const HeroSection: React.FC = () => {
 
       {/* Mouse Follow Spotlight (Desktop only for max mobile performance) */}
       <div
-        className="hidden md:block absolute pointer-events-none -z-0 w-[500px] h-[500px] rounded-full bg-radial from-[#FF6B35]/20 via-[#FF8A00]/10 to-transparent filter blur-3xl transition-transform duration-300 ease-out"
+        ref={spotlightRef}
+        className="hidden md:block absolute pointer-events-none -z-0 w-[500px] h-[500px] rounded-full bg-radial from-[#FF6B35]/20 via-[#FF8A00]/10 to-transparent filter blur-3xl transition-transform duration-150 ease-out will-change-transform"
         style={{
-          transform: `translate3d(${mousePos.x * 120}px, ${mousePos.y * 120}px, 0)`,
           left: "calc(50% - 250px)",
           top: "calc(50% - 250px)",
         }}
@@ -84,9 +91,10 @@ export const HeroSection: React.FC = () => {
 
       {/* Liquid Ketchup / Sauce Splash Shimmer Behind Center Stage */}
       <div 
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[550px] pointer-events-none -z-0 opacity-85 transition-transform duration-500 ease-out"
+        ref={sauceRef}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[550px] pointer-events-none -z-0 opacity-85 transition-transform duration-300 ease-out will-change-transform"
         style={{
-          transform: `translate(-50%, -50%) translate3d(${mousePos.x * 25}px, ${mousePos.y * 25}px, 0)`,
+          transform: "translate(-50%, -50%)",
         }}
       >
         <svg viewBox="0 0 600 500" className="w-full h-full filter drop-shadow-2xl">
@@ -189,10 +197,8 @@ export const HeroSection: React.FC = () => {
             
             {/* Primary Main Floating Dish Card */}
             <div 
-              className="relative mx-auto max-w-sm w-full transition-transform duration-300 ease-out animate-float-slow"
-              style={{
-                transform: `rotateY(${mousePos.x * 16}deg) rotateX(${-mousePos.y * 16}deg)`,
-              }}
+              ref={dishCardRef}
+              className="relative mx-auto max-w-sm w-full transition-transform duration-300 ease-out animate-float-slow will-change-transform"
             >
               {/* Outer Radiant Glow */}
               <div className="absolute -inset-4 bg-gradient-to-tr from-[#FF6B35]/30 via-[#FF8A00]/20 to-[#FF4D6D]/25 rounded-[3rem] blur-2xl -z-10 animate-pulse-glow" />

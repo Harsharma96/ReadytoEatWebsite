@@ -94,64 +94,54 @@ export const Preloader: React.FC = () => {
         opacity: 0,
       });
 
-      // ── Step 1: Fork & Spoon Icon Smooth Fade + Scale-Up (0.15s - 0.85s)
+      // ── Step 1: Fork & Spoon Icon Smooth Fade + Scale-Up (0.05s - 0.45s)
       tl.to(
         iconWrapperRef.current,
         {
           opacity: 1,
           scale: 1,
           y: 0,
-          duration: 0.72,
+          duration: 0.42,
+          ease: "power2.out",
+        },
+        0.05
+      );
+
+      // ── Step 2: Subtle Ambient Orange Glow Around Icon (0.15s - 0.65s)
+      tl.to(
+        iconGlowRef.current,
+        {
+          opacity: 0.65,
+          scale: 1.12,
+          duration: 0.4,
           ease: "power2.out",
         },
         0.15
       );
 
-      // ── Step 2: Subtle Ambient Orange Glow Around Icon (0.35s - 1.15s)
-      tl.to(
-        iconGlowRef.current,
-        {
-          opacity: 0.65,
-          scale: 1.15,
-          duration: 0.65,
-          ease: "power2.out",
-        },
-        0.35
-      );
-      tl.to(
-        iconGlowRef.current,
-        {
-          opacity: 0.35,
-          scale: 1.0,
-          duration: 0.7,
-          ease: "sine.inOut",
-        },
-        1.0
-      );
-
-      // ── Step 3: "FOODEAT" Text Reveal from Blurred to Sharp (0.65s - 1.35s)
+      // ── Step 3: "FOODEAT" Text Reveal from Blurred to Sharp (0.25s - 0.65s)
       tl.to(
         brandTextRef.current,
         {
           opacity: 1,
           y: 0,
           filter: "blur(0px)",
-          duration: 0.7,
+          duration: 0.4,
           ease: "power3.out",
         },
-        0.65
+        0.25
       );
 
-      // ── Step 4: Tagline "SHAHI RASOI • DESI GHEE" Smooth Fade-Up (1.05s - 1.65s)
+      // ── Step 4: Tagline "SHAHI RASOI • DESI GHEE" Smooth Fade-Up (0.45s - 0.8s)
       tl.to(
         taglineRef.current,
         {
           opacity: 1,
           y: 0,
-          duration: 0.6,
+          duration: 0.35,
           ease: "power2.out",
         },
-        1.05
+        0.45
       );
 
       // Show subtle skip button after logo stabilizes
@@ -159,52 +149,52 @@ export const Preloader: React.FC = () => {
         skipButtonRef.current,
         {
           opacity: 0.6,
-          duration: 0.35,
+          duration: 0.25,
         },
-        1.2
+        0.5
       );
 
-      // ── Step 5: Single Soft Light Sheen Sweep Across the Logo (1.55s - 2.15s)
+      // ── Step 5: Soft Light Sheen Sweep Across the Logo (0.6s - 0.95s)
       tl.to(
         shineBeamRef.current,
         {
           x: 280,
           opacity: 0.45,
-          duration: 0.65,
+          duration: 0.38,
           ease: "power2.inOut",
         },
-        1.55
+        0.6
       );
       tl.to(
         shineBeamRef.current,
         {
           opacity: 0,
-          duration: 0.2,
+          duration: 0.15,
           ease: "power1.out",
         },
-        2.1
+        0.95
       );
 
-      // ── Step 6: Smooth Cinematic Transition into Main Website (2.35s - 2.75s)
+      // ── Step 6: Smooth Cinematic Transition into Main Website (1.05s - 1.35s)
       tl.to(
         contentWrapperRef.current,
         {
           opacity: 0,
-          scale: 1.025,
-          duration: 0.45,
+          scale: 1.02,
+          duration: 0.3,
           ease: "power2.in",
         },
-        2.35
+        1.05
       );
 
       tl.to(
         overlayRef.current,
         {
           opacity: 0,
-          duration: 0.45,
+          duration: 0.3,
           ease: "power2.inOut",
         },
-        2.4
+        1.1
       );
     }, overlayRef);
 
