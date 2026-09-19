@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { Product } from "@/types/product";
+import { CATEGORY_EMOJIS } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { 
   X, 
@@ -144,7 +145,7 @@ export const SideMenuDrawer: React.FC<SideMenuDrawerProps> = ({
                         : "bg-white/10 text-gray-300 border-white/15 hover:bg-white/20"
                     }`}
                   >
-                    <span>{cat.emoji}</span>
+                    <span>{(!cat.emoji || cat.emoji.includes("?")) ? (CATEGORY_EMOJIS[cat.name] || "🍽️") : cat.emoji}</span>
                     <span>{cat.name}</span>
                   </button>
                 );

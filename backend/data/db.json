@@ -5523,78 +5523,16 @@
   ],
   "promoCodes": [
     {
-      "code": "HARS123",
-      "title": "20% Instant Royal Feast Discount",
-      "discountPercent": 20,
-      "minSpend": 499,
-      "description": "20% Off Special Offer on all royal feasts above \u20B9499",
-      "isActive": true,
-      "isFlashBanner": false,
-      "freeItem": "2 Free 24K Gold Gulab Jamuns",
-      "badgeText": "\uD83D\uDC51 CHEF BESTSELLER",
-      "hoursLeft": 12,
-      "bgGradient": "from-[#FF6B35] to-[#FF8A00]"
-    },
-    {
-      "code": "FEAST20",
-      "title": "20% Off on Grand Family Dawat",
-      "discountPercent": 20,
-      "minSpend": 599,
-      "description": "Save 20% on any royal feast order above \u20B9599",
-      "isActive": true,
-      "isFlashBanner": false,
-      "freeItem": "Free Amritsari Kesar Matka Lassi",
-      "badgeText": "\uD83C\uDF89 POPULAR FEAST",
-      "hoursLeft": 18,
-      "bgGradient": "from-[#FF4D6D] to-[#FF8A00]"
-    },
-    {
-      "code": "DESI100",
-      "title": "Flat \u20B9100 Off on Gourmet Orders",
-      "fixedDiscount": 100,
-      "minSpend": 699,
-      "description": "Flat \u20B9100 instant cash discount on cart value \u20B9699\u002B",
-      "isActive": true,
-      "isFlashBanner": false,
-      "badgeText": "\uD83C\uDFF7\uFE0F FLAT \u20B9100 OFF",
-      "hoursLeft": 24,
-      "bgGradient": "from-[#3ECF6E] to-[#22C55E]"
-    },
-    {
-      "code": "BIRYANI25",
-      "title": "25% Royal Biryani \u0026 North Indian Special",
+      "code": "HARS9090",
+      "title": "",
       "discountPercent": 25,
-      "minSpend": 549,
-      "description": "Enjoy 25% off on authentic Awadhi Dum Biryani \u0026 North Indian feasts",
+      "minSpend": 499,
+      "description": "25% OFF on Shahi Royal Feast orders \u002B 2 Free 24K Gold Gulab Jamuns",
       "isActive": true,
-      "isFlashBanner": false,
-      "badgeText": "\uD83C\uDF5A BIRYANI SPECIAL",
-      "hoursLeft": 16,
-      "bgGradient": "from-[#D4A373] to-[#FF8A00]"
-    },
-    {
-      "code": "ROYAL50",
-      "title": "Flat \u20B950 Welcome Discount",
-      "fixedDiscount": 50,
-      "minSpend": 299,
-      "description": "Flat \u20B950 discount for royal food lovers on orders above \u20B9299",
-      "isActive": true,
-      "isFlashBanner": false,
-      "badgeText": "\u2728 WELCOME VOUCHER",
-      "hoursLeft": 24,
-      "bgGradient": "from-[#FFC94A] to-[#FF8A00]"
-    },
-    {
-      "code": "CHAI15",
-      "title": "15% Evening Chai \u0026 Snack Special",
-      "discountPercent": 15,
-      "minSpend": 199,
-      "description": "15% off on all artisanal Kulhad Chai, Shakes \u0026 Snacks",
-      "isActive": true,
-      "isFlashBanner": false,
-      "badgeText": "\u2615 CHAI TIME",
-      "hoursLeft": 20,
-      "bgGradient": "from-[#22C55E] to-[#3ECF6E]"
+      "isFlashBanner": true,
+      "freeItem": "2 Free 24K Gold Gulab Jamuns",
+      "badgeText": "\uD83D\uDC51 LIMITED SHAHI RASOI OFFER",
+      "hoursLeft": 3
     }
   ],
   "contactInquiries": [
@@ -6247,7 +6185,7 @@
     {
       "id": "cat-burgers",
       "name": "Burgers \u0026 Wraps",
-      "emoji": "??",
+      "emoji": "\uD83C\uDF54",
       "subtitle": "Smash \u0026 Crispy",
       "bgGradient": "from-[#FFF0E5] to-[#FFE4D6]",
       "borderColor": "border-[#FF6B35]/40",
@@ -6259,7 +6197,7 @@
     {
       "id": "cat-pizzas",
       "name": "Pizzas \u0026 Garlic Breads",
-      "emoji": "??",
+      "emoji": "\uD83C\uDF55",
       "subtitle": "Cheese Burst",
       "bgGradient": "from-[#FFE8EC] to-[#FFD5DC]",
       "borderColor": "border-[#FF4D6D]/40",
@@ -6271,7 +6209,7 @@
     {
       "id": "cat-snacks",
       "name": "Snacks \u0026 Chaat",
-      "emoji": "??",
+      "emoji": "\uD83C\uDF5F",
       "subtitle": "Peri Fries \u0026 Chaat",
       "bgGradient": "from-[#FFF4E5] to-[#FFE6CC]",
       "borderColor": "border-[#FF8A00]/40",
@@ -6283,7 +6221,7 @@
     {
       "id": "cat-chinese",
       "name": "Chinese \u0026 Momos",
-      "emoji": "??",
+      "emoji": "\uD83E\uDD62",
       "subtitle": "Noodles \u0026 Dim Sum",
       "bgGradient": "from-[#FFF2EB] to-[#FCD1B8]",
       "borderColor": "border-[#E85620]/40",
@@ -6295,7 +6233,7 @@
     {
       "id": "cat-biryani",
       "name": "Biryani \u0026 North Indian",
-      "emoji": "??",
+      "emoji": "\uD83C\uDF5A",
       "subtitle": "Dum \u0026 Butter Curry",
       "bgGradient": "from-[#FFFBF5] to-[#EFE1CE]",
       "borderColor": "border-[#D4A373]/40",
@@ -6307,7 +6245,7 @@
     {
       "id": "cat-gujarati",
       "name": "Gujarati \u0026 Thalis",
-      "emoji": "??",
+      "emoji": "\uD83D\uDFE1",
       "subtitle": "Undhiyu \u0026 Dhokla",
       "bgGradient": "from-[#FFF9E6] to-[#FFEAB3]",
       "borderColor": "border-[#FFC94A]/50",
@@ -6319,7 +6257,7 @@
     {
       "id": "cat-south-indian",
       "name": "South Indian",
-      "emoji": "??",
+      "emoji": "\uD83E\uDD65",
       "subtitle": "Ghee Dosa \u0026 Idli",
       "bgGradient": "from-[#EAF9EF] to-[#D5F5E0]",
       "borderColor": "border-[#3ECF6E]/40",
@@ -6331,7 +6269,7 @@
     {
       "id": "cat-chai",
       "name": "Chai, Coffee \u0026 Juices",
-      "emoji": "?",
+      "emoji": "\u2615",
       "subtitle": "Kulhad \u0026 Shakes",
       "bgGradient": "from-[#F0FDF4] to-[#DCFCE7]",
       "borderColor": "border-[#22C55E]/40",
@@ -6343,7 +6281,7 @@
     {
       "id": "cat-desserts",
       "name": "Desserts \u0026 Shakes",
-      "emoji": "??",
+      "emoji": "\uD83C\uDF70",
       "subtitle": "Choco Lava \u0026 Mithai",
       "bgGradient": "from-[#FFF8F2] to-[#F5D8BF]",
       "borderColor": "border-[#E0A96D]/40",
@@ -6356,7 +6294,7 @@
   "chefSpecial": {
     "id": "chef-special-default",
     "productId": "double-smash-cheese-burger",
-    "badgeText": "?? ROYAL CHEF SPECIAL OF THE MONTH",
+    "badgeText": "\uD83D\uDC51 ROYAL CHEF SPECIAL OF THE MONTH",
     "customTitle": "Nawabi Awadhi Zafrani Handi Dum Biryani",
     "customDescription": "Curated by Master Ustads of Lucknow. Prime cuts of tender lamb marinated for 48 hours in stone-ground Awadhi spices, layered with aged Basmati rice, infused with Kashmiri saffron milk, and sealed in clay handi for 4 hours of slow charcoal dum cooking.",
     "heritageTag": "Awadh Royals",

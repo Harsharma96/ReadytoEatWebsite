@@ -70,7 +70,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Order, OrderStatus, PromoCode, ContactInquiry, NewsletterSubscriber, FeedbackReview, FeastBoxTier, StoreSettings, PaymentTransaction, TrendingSpotlightItem, MenuCategoryItem, ChefSpecialConfig, PaymentGatewaySettings } from "@/types";
-import { PRODUCTS } from "@/data/products";
+import { PRODUCTS, CATEGORY_EMOJIS } from "@/data/products";
 import { Product, ProductCategory, CustomizationGroup, CustomizationOption } from "@/types/product";
 import { downloadOrderReceipt, downloadDailyShiftClosingReport, DailyClosingReportData } from "@/utils/generateReceipt";
 
@@ -697,7 +697,11 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
       const catRes = await fetch(`/api/categories?admin=true&t=${Date.now()}`);
       const catData = await catRes.json();
       if (catData.success && Array.isArray(catData.categories)) {
-        setCategories(catData.categories);
+        const sanitized = catData.categories.map((c: any) => ({
+          ...c,
+          emoji: (!c.emoji || c.emoji.includes("?")) ? (CATEGORY_EMOJIS[c.name] || "🍽️") : c.emoji,
+        }));
+        setCategories(sanitized);
       }
 
       const specialRes = await fetch(`/api/chef-special?t=${Date.now()}`);

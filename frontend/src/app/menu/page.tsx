@@ -153,7 +153,7 @@ export default function MenuPage() {
           return {
             id: c.name,
             name: c.name,
-            emoji: c.emoji || CATEGORY_EMOJIS[c.name] || "🍲",
+            emoji: (!c.emoji || c.emoji.includes("?")) ? (CATEGORY_EMOJIS[c.name] || "🍲") : c.emoji,
             subtitle: c.subtitle || fallback.subtitle,
             bgGradient: c.bgGradient || fallback.bgGradient,
             borderColor: c.borderColor || fallback.borderColor,

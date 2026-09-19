@@ -211,7 +211,7 @@ export const MenuSection: React.FC = () => {
           const dynamicCats: MenuCategoryConfig[] = data.categories.map((c: any) => ({
             id: c.name,
             name: c.name,
-            emoji: c.emoji || "🍽️",
+            emoji: (!c.emoji || c.emoji.includes("?")) ? (CATEGORY_EMOJIS[c.name] || "🍽️") : c.emoji,
             subtitle: c.subtitle || "Chef Special",
             bgGradient: c.bgGradient || "from-[#FFF0E5] to-[#FFE4D6]",
             borderColor: c.borderColor || "border-[#FF6B35]/40",
