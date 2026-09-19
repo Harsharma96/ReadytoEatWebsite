@@ -129,4 +129,10 @@ public class Order
 
     [JsonPropertyName("isArchived")]
     public bool IsArchived { get; set; } = false;
+
+    [JsonPropertyName("category")]
+    public string? Category { get; set; }
+
+    [JsonPropertyName("isTrending")]
+    public bool IsTrending { get; set; } = false;
 }

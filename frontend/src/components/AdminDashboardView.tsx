@@ -260,6 +260,9 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
   const [orderCategoryFilter, setOrderCategoryFilter] = useState<string>("ALL");
 
   const getOrderCategory = (order: Order): string => {
+    if ((order as any).isTrending || (order as any).category === "Trending" || order.id?.startsWith("FE-TRND-")) {
+      return "Trending Deals";
+    }
     if (!order.items || order.items.length === 0) return "General";
     const item = order.items[0];
     const prod = products.find(p => p.id === item.productId || p.name.toLowerCase() === item.name.toLowerCase());
@@ -2367,7 +2370,11 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
     // Category Filter
     let matchesCategory = true;
     if (orderCategoryFilter !== "ALL") {
-      matchesCategory = getOrderCategory(o) === orderCategoryFilter;
+      if (orderCategoryFilter === "TRENDING") {
+        matchesCategory = (o as any).isTrending === true || (o as any).category === "Trending" || o.id?.startsWith("FE-TRND-") || o.items?.some(it => trendingSpotlights.some(t => t.productId === it.productId));
+      } else {
+        matchesCategory = getOrderCategory(o) === orderCategoryFilter;
+      }
     }
 
     return matchesStatus && matchesPayment && matchesCategory;
@@ -3333,6 +3340,7 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
                   </span>
                   {[
                     { label: "All", value: "ALL", emoji: "✨" },
+                    { label: "Trending", value: "TRENDING", emoji: "🔥" },
                     { label: "Burgers", value: "Burgers & Wraps", emoji: "🍔" },
                     { label: "Pizzas", value: "Pizzas & Garlic Breads", emoji: "🍕" },
                     { label: "Snacks", value: "Snacks & Chaat", emoji: "🍟" },
@@ -3346,6 +3354,8 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
                     const isSelected = orderCategoryFilter === cat.value;
                     const catCount = cat.value === "ALL" 
                       ? baseOrdersForFilter.length 
+                      : cat.value === "TRENDING"
+                      ? baseOrdersForFilter.filter(o => (o as any).isTrending || (o as any).category === "Trending" || o.id?.startsWith("FE-TRND-") || o.items?.some(it => trendingSpotlights.some(t => t.productId === it.productId))).length
                       : baseOrdersForFilter.filter(o => getOrderCategory(o) === cat.value).length;
 
                     return (
@@ -3404,9 +3414,15 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
                           <span className="font-black text-gray-900 text-xs sm:text-sm font-heading truncate group-hover:text-[#FF6B35] transition-colors">
                             {order.customerName}
                           </span>
-                          <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-gray-100 text-gray-700 border border-gray-200 shrink-0 hidden sm:inline-block">
-                            {orderCategory}
-                          </span>
+                          {(order as any).isTrending || order.id?.startsWith("FE-TRND-") ? (
+                            <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-2xs shrink-0 flex items-center gap-0.5">
+                              <Flame className="w-2 h-2 fill-white" /> Trending
+                            </span>
+                          ) : (
+                            <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-gray-100 text-gray-700 border border-gray-200 shrink-0 hidden sm:inline-block">
+                              {orderCategory}
+                            </span>
+                          )}
                           {isOnlinePaid ? (
                             <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
                               ⚡ UPI

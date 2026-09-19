@@ -150,7 +150,7 @@ export const PopularMarquee: React.FC = () => {
             <h2 className="text-lg sm:text-2xl lg:text-3xl font-black text-[#0B1220] font-heading flex items-center gap-2 flex-wrap">
               <span>🔥 Popular & Trending Today</span>
               <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-xs">
-                ★ 4-Dish Showcase
+                ★ {trendingItems.length || 8} Trending Deals
               </span>
             </h2>
             <p className="text-gray-500 text-[11px] sm:text-xs max-w-lg font-medium">
