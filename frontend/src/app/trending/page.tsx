@@ -4,6 +4,7 @@ import React from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { PopularMarquee } from "@/components/PopularMarquee";
+import { PromoTicker } from "@/components/PromoTicker";
 import { FoodGallerySection } from "@/components/FoodGallerySection";
 import { Flame, Sparkles, TrendingUp } from "lucide-react";
 import Link from "next/link";
@@ -30,6 +31,9 @@ export default function TrendingPage() {
           </p>
         </div>
       </section>
+
+      {/* Moving Ticker */}
+      <PromoTicker />
 
       {/* 5-Column Pinterest Masonry */}
       <PopularMarquee />

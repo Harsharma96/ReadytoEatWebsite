@@ -28,7 +28,7 @@ interface TrendingDisplayItem {
 }
 
 export const PopularMarquee: React.FC = () => {
-  const { addToCart, openQuickView, toggleWishlist, isInWishlist, activePromo, availablePromos } = useCart();
+  const { addToCart, openQuickView, toggleWishlist, isInWishlist } = useCart();
   const [trendingItems, setTrendingItems] = useState<TrendingDisplayItem[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [isAutoPlay, setIsAutoPlay] = useState<boolean>(true);
@@ -138,37 +138,6 @@ export const PopularMarquee: React.FC = () => {
 
   return (
     <section id="trending" className="py-8 sm:py-16 bg-[#FFF8F2] relative overflow-hidden">
-      
-      {/* Live Moving Ticker Header */}
-      <div className="w-full bg-[#0B1220] text-white py-1.5 sm:py-2.5 overflow-hidden shadow-md border-y border-white/10 mb-6 sm:mb-10">
-        <div className="animate-marquee-slow flex items-center gap-8 sm:gap-12 whitespace-nowrap text-[11px] sm:text-xs font-black tracking-wider uppercase">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="flex items-center gap-6 sm:gap-8">
-              <span className="flex items-center gap-1.5 text-[#FF6B35]">
-                <Flame className="w-3.5 h-3.5 fill-[#FF6B35]" /> 1,487 ORDERS PLACED TODAY
-              </span>
-              <span className="text-gray-500">•</span>
-              <span className="flex items-center gap-1.5 text-[#FFC94A]">
-                <Sparkles className="w-3.5 h-3.5 text-[#FFC94A]" /> ADMIN SPOTLIGHT OFFERS LIVE
-              </span>
-              <span className="text-gray-500">•</span>
-              <span className="text-[#3ECF6E]">100% PURE COW DESI GHEE</span>
-              <span className="text-gray-500">•</span>
-              {availablePromos && availablePromos.length > 0 ? (
-                <span className="text-[#FF4D6D] font-black">
-                  VIP VOUCHERS: {availablePromos.slice(0, 3).map(p => `${p.code} (${p.discountPercent ? `${p.discountPercent}% OFF` : `₹${p.fixedDiscount} OFF`})`).join(" • ")}
-                </span>
-              ) : activePromo ? (
-                <span className="text-[#FF4D6D]">VIP COUPON: {activePromo.code}</span>
-              ) : (
-                <span className="text-[#FF4D6D]">25-MIN HOT THERMAL DISPATCH</span>
-              )}
-              <span className="text-gray-500">•</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header with Next / Prev Navigation Controls */}

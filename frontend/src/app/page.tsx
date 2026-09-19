@@ -3,6 +3,7 @@
 import React from "react";
 import { Navbar } from "@/components/Navbar";
 import { HeroSection } from "@/components/HeroSection";
+import { PromoTicker } from "@/components/PromoTicker";
 import { PopularMarquee } from "@/components/PopularMarquee";
 import { MenuSection } from "@/components/MenuSection";
 import { ChefSpecialSection } from "@/components/ChefSpecialSection";
@@ -26,6 +27,9 @@ export default function Home() {
 
       {/* 2. Hero Section */}
       <HeroSection />
+
+      {/* Live Moving Ticker Header (Above Trending Now) */}
+      <PromoTicker />
 
       {/* ── Divider ── */}
       <SectionDivider variant="flame" label="Trending Now" />
