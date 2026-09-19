@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Product } from "@/types/product";
+import { PromoCode } from "@/types";
 import { fetchWithDeduplication } from "@/utils/apiClient";
 
 export interface CartItem {
@@ -31,6 +32,8 @@ interface CartContextType {
   promoApplied: boolean;
   promoDiscountPercent: number;
   activePromo: { code: string; discountPercent?: number; description: string } | null;
+  availablePromos: PromoCode[];
+  refreshPromos: () => Promise<void>;
   applyPromoCode: (code: string) => Promise<{ success: boolean; message: string }>;
   removePromoCode: () => void;
   showToast: (msg: string) => void;
@@ -80,6 +83,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [promoDiscountPercent, setPromoDiscountPercent] = useState<number>(0);
   const [promoApplied, setPromoApplied] = useState<boolean>(false);
   const [activePromo, setActivePromo] = useState<{ code: string; discountPercent?: number; description: string } | null>(null);
+  const [availablePromos, setAvailablePromos] = useState<PromoCode[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   
   // Store & GST settings from Admin
@@ -107,18 +111,41 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       })
       .catch(() => {});
 
-    fetchWithDeduplication("/api/promo")
+    fetchWithDeduplication(`/api/promo?t=${Date.now()}`)
       .then((data) => {
         if (data && data.success && Array.isArray(data.promos)) {
-          const firstActive = data.promos.find((p: any) => p.isActive);
-          setActivePromo(firstActive || null);
+          const activeList = data.promos.filter((p: PromoCode) => p.isActive);
+          setAvailablePromos(activeList);
+          const flash = activeList.find((p: PromoCode) => p.isFlashBanner);
+          setActivePromo(flash || activeList[0] || null);
         }
       })
       .catch(() => {});
   };
 
+  const refreshPromos = async () => {
+    try {
+      const res = await fetch(`/api/promo?t=${Date.now()}`);
+      const data = await res.json();
+      if (data && data.success && Array.isArray(data.promos)) {
+        const activeList = data.promos.filter((p: PromoCode) => p.isActive);
+        setAvailablePromos(activeList);
+        const flash = activeList.find((p: PromoCode) => p.isFlashBanner);
+        setActivePromo(flash || activeList[0] || null);
+      }
+    } catch {}
+  };
+
   useEffect(() => {
     fetchSettingsAndPromo();
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "foodeat_promos_updated" || e.key === "foodeat_menu_last_updated") {
+        fetchSettingsAndPromo();
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
   // Load from local storage
@@ -348,6 +375,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         promoApplied,
         promoDiscountPercent,
         activePromo,
+        availablePromos,
+        refreshPromos,
         applyPromoCode,
         removePromoCode,
         isCartOpen,

@@ -418,11 +418,11 @@ export const MenuSection: React.FC = () => {
     (searchQuery ? 1 : 0);
 
   return (
-    <section id="menu" className="py-6 sm:py-20 bg-gradient-to-b from-[#FFF8F2]/60 via-[#FFF5EB] to-[#FFF8F2] relative overflow-hidden">
+    <section id="menu" className="py-6 sm:py-20 bg-gradient-to-b from-[#FFF8F2]/60 via-[#FFF5EB] to-[#FFF8F2] relative overflow-visible">
       
-      {/* Subtle Background Glows */}
-      <div className="absolute top-12 left-10 w-80 h-80 bg-[#FF6B35]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-12 right-10 w-80 h-80 bg-[#3ECF6E]/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Clean, non-blurred background accents */}
+      <div className="absolute top-12 left-10 w-80 h-80 bg-[#FF6B35]/8 rounded-full pointer-events-none" />
+      <div className="absolute bottom-12 right-10 w-80 h-80 bg-[#3ECF6E]/8 rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10 space-y-4 sm:space-y-7">
         
@@ -754,7 +754,7 @@ export const MenuSection: React.FC = () => {
           <button
             onClick={() => scrollCategory("left")}
             aria-label="Scroll categories left"
-            className="flex absolute -left-1 sm:-left-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-white/95 backdrop-blur-md shadow-md border border-gray-200/90 items-center justify-center text-gray-700 hover:text-[#FF6B35] hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
+            className="flex absolute -left-1 sm:-left-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-white shadow-md border border-gray-200/90 items-center justify-center text-gray-700 hover:text-[#FF6B35] hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
           >
             <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
@@ -763,7 +763,7 @@ export const MenuSection: React.FC = () => {
           <button
             onClick={() => scrollCategory("right")}
             aria-label="Scroll categories right"
-            className="flex absolute -right-1 sm:-right-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-white/95 backdrop-blur-md shadow-md border border-gray-200/90 items-center justify-center text-gray-700 hover:text-[#FF6B35] hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
+            className="flex absolute -right-1 sm:-right-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-white shadow-md border border-gray-200/90 items-center justify-center text-gray-700 hover:text-[#FF6B35] hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
           >
             <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
@@ -772,7 +772,7 @@ export const MenuSection: React.FC = () => {
           <div
             ref={categoryScrollRef}
             onScroll={handleCategoryScroll}
-            className="category-scroll-container w-full flex items-stretch gap-1.5 sm:gap-2 overflow-x-auto pb-1.5 pt-0.5 scroll-smooth snap-x snap-mandatory px-0.5"
+            className="category-scroll-container w-full flex items-stretch gap-1.5 sm:gap-2 overflow-x-auto overflow-y-visible pb-1.5 pt-1 scroll-smooth snap-x snap-mandatory px-0.5"
           >
             {categoriesList.map((cat) => {
               const isSelected = selectedCategory === cat.id;

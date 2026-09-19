@@ -34,7 +34,7 @@ export const FlashOfferBanner: React.FC = () => {
     try {
       const res = await fetch(`/api/promo/flash?t=${Date.now()}`);
       const data = await res.json();
-      if (data.success && data.hasActiveOffer && data.promo) {
+      if (data.success && data.promo && data.hasActiveOffer !== false) {
         setFlashPromo(data.promo);
         if (data.promo.hoursLeft) {
           setTimeLeft({

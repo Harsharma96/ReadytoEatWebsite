@@ -11,7 +11,10 @@ import {
   ArrowRight, 
   Truck, 
   Tag,
-  Coins
+  Coins,
+  Sparkles,
+  Gift,
+  CheckCircle2
 } from "lucide-react";
 
 export const CartDrawer: React.FC = () => {
@@ -33,6 +36,7 @@ export const CartDrawer: React.FC = () => {
     finalTotal, 
     promoCode, 
     promoApplied, 
+    availablePromos,
     applyPromoCode, 
     removePromoCode, 
     setIsCheckoutOpen 
@@ -274,6 +278,70 @@ export const CartDrawer: React.FC = () => {
                   <p className={`text-[10px] font-bold mt-1 ${promoMessage.error ? "text-red-500" : "text-emerald-600"}`}>
                     {promoMessage.text}
                   </p>
+                )}
+
+                {/* Available Royal Vouchers (Loaded Live from Admin Panel) */}
+                {availablePromos && availablePromos.length > 0 && (
+                  <div className="mt-2.5 pt-2 border-t border-dashed border-gray-200">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-gray-600 flex items-center gap-1">
+                        <Sparkles className="w-3 h-3 text-[#FF6B35]" /> Available Offers ({availablePromos.length})
+                      </span>
+                      <span className="text-[8.5px] font-bold text-gray-400">1-Tap Apply</span>
+                    </div>
+
+                    <div className="space-y-1.5 max-h-36 overflow-y-auto no-scrollbar pr-0.5">
+                      {availablePromos.map((p) => {
+                        const isCurrent = promoApplied && promoCode === p.code;
+                        const meetsMinSpend = subtotal >= p.minSpend;
+                        return (
+                          <div
+                            key={p.code}
+                            className={`p-2 rounded-xl border transition-all text-left ${
+                              isCurrent
+                                ? "bg-emerald-50/90 border-emerald-300 ring-1 ring-emerald-400/30"
+                                : "bg-gradient-to-r from-orange-50/50 via-white to-amber-50/40 border-orange-200/80 hover:border-orange-300"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-1.5">
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <span className="px-1.5 py-0.5 rounded bg-white text-[#FF6B35] font-black text-[9.5px] tracking-wider border border-orange-200 shadow-2xs font-mono">
+                                  {p.code}
+                                </span>
+                                <span className="text-[10px] font-black text-gray-900 truncate">
+                                  {p.discountPercent ? `${p.discountPercent}% OFF` : `₹${p.fixedDiscount} OFF`}
+                                </span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (!isCurrent) {
+                                    applyPromoCode(p.code);
+                                  }
+                                }}
+                                disabled={isCurrent}
+                                className={`px-2.5 py-0.5 rounded-lg text-[9.5px] font-black cursor-pointer transition-all ${
+                                  isCurrent
+                                    ? "bg-emerald-600 text-white cursor-default"
+                                    : "bg-[#0B1220] hover:bg-[#FF6B35] text-white active:scale-95 shadow-2xs"
+                                }`}
+                              >
+                                {isCurrent ? "✓ Applied" : "Apply"}
+                              </button>
+                            </div>
+                            <p className="text-[9px] text-gray-500 mt-1 leading-tight line-clamp-1">
+                              {p.description || `Applicable on orders above ₹${p.minSpend}`}
+                            </p>
+                            {p.minSpend > 0 && !meetsMinSpend && (
+                              <p className="text-[8.5px] text-amber-700 font-bold mt-0.5">
+                                Add ₹{Math.ceil(p.minSpend - subtotal)} more to unlock
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
               </div>
             )}

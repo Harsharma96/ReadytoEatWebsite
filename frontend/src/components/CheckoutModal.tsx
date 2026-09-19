@@ -35,6 +35,10 @@ export const CheckoutModal: React.FC = () => {
     setIsCheckoutOpen, 
     cart,
     promoCode,
+    promoApplied,
+    availablePromos,
+    applyPromoCode,
+    removePromoCode,
     clearCart, 
     finalTotal,
     subtotal,
@@ -1087,6 +1091,57 @@ export const CheckoutModal: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Available Promo Vouchers (Live from Admin) */}
+                {availablePromos && availablePromos.length > 0 && (
+                  <div className="p-2.5 rounded-xl bg-orange-50/50 border border-orange-200/80 space-y-1.5 text-left">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase text-gray-700 flex items-center gap-1">
+                        <Sparkles className="w-3 h-3 text-[#FF6B35]" /> Royal Vouchers Available
+                      </span>
+                      {promoApplied && (
+                        <button
+                          type="button"
+                          onClick={removePromoCode}
+                          className="text-[9px] text-red-500 hover:text-red-700 font-bold cursor-pointer"
+                        >
+                          Remove Voucher
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                      {availablePromos.map((p) => {
+                        const isCurrent = promoApplied && promoCode === p.code;
+                        const meetsMinSpend = subtotal >= p.minSpend;
+                        return (
+                          <button
+                            key={p.code}
+                            type="button"
+                            onClick={() => {
+                              if (!isCurrent) applyPromoCode(p.code);
+                            }}
+                            className={`px-2 py-1 rounded-lg border text-left shrink-0 transition-all flex items-center gap-1.5 cursor-pointer ${
+                              isCurrent
+                                ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs scale-102"
+                                : meetsMinSpend
+                                ? "bg-white text-gray-800 border-orange-200 hover:border-[#FF6B35]"
+                                : "bg-gray-100 text-gray-400 border-gray-200 opacity-60"
+                            }`}
+                          >
+                            <span className="font-mono font-black text-[9.5px] uppercase">
+                              {p.code}
+                            </span>
+                            <span className="text-[8.5px] font-bold">
+                              {p.discountPercent ? `${p.discountPercent}% OFF` : `₹${p.fixedDiscount} OFF`}
+                            </span>
+                            {isCurrent && <Check className="w-2.5 h-2.5" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {/* Final Bill Breakdown */}
                 <div className="p-2.5 rounded-xl bg-gray-50 border border-gray-100 space-y-1 text-[11px] text-gray-600">
                   <div className="flex justify-between">
@@ -1096,7 +1151,7 @@ export const CheckoutModal: React.FC = () => {
 
                   {discount > 0 && (
                     <div className="flex justify-between text-emerald-600 font-bold">
-                      <span>Discount</span>
+                      <span>Discount ({promoCode})</span>
                       <span>-₹{Math.round(discount)}</span>
                     </div>
                   )}

@@ -123,10 +123,10 @@ export const CategoriesSection: React.FC = () => {
             <a
               key={cat.id}
               href="#menu"
-              className={`group rounded-3xl p-5 bg-gradient-to-b ${cat.bgGradient} border ${cat.borderColor} text-center flex flex-col items-center justify-between transition-all duration-300 hover:-translate-y-2 hover:shadow-glow active:scale-95`}
+              className={`group rounded-3xl p-5 bg-gradient-to-b ${cat.bgGradient} border ${cat.borderColor} text-center flex flex-col items-center justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-sm active:scale-95`}
             >
               {/* Circular Emoji Badge with Hover Rotation & Glow */}
-              <div className="w-16 h-16 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center text-3xl mb-3 shadow-xs group-hover:scale-120 group-hover:rotate-12 transition-transform duration-300">
+              <div className="w-16 h-16 rounded-full bg-white/95 flex items-center justify-center text-3xl mb-3 shadow-xs group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
                 {cat.emoji}
               </div>
 

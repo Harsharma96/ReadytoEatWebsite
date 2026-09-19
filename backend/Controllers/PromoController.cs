@@ -35,6 +35,7 @@ public class PromoController : ControllerBase
         return Ok(new
         {
             success = true,
+            hasActiveOffer = promo != null,
             promo
         });
     }

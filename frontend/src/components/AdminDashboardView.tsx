@@ -257,6 +257,25 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
   const [orderDateFilter, setOrderDateFilter] = useState<"ALL" | "TODAY" | "YESTERDAY" | "LAST_7_DAYS" | "CUSTOM">("ALL");
   const [customFilterDate, setCustomFilterDate] = useState<string>(new Date().toISOString().split("T")[0]);
   const [orderPaymentFilter, setOrderPaymentFilter] = useState<"ALL" | "COD_PENDING" | "COD_PAID" | "ONLINE_PAID">("ALL");
+  const [orderCategoryFilter, setOrderCategoryFilter] = useState<string>("ALL");
+
+  const getOrderCategory = (order: Order): string => {
+    if (!order.items || order.items.length === 0) return "General";
+    const item = order.items[0];
+    const prod = products.find(p => p.id === item.productId || p.name.toLowerCase() === item.name.toLowerCase());
+    if (prod && prod.category) return prod.category;
+    const n = item.name.toLowerCase();
+    if (n.includes("burger") || n.includes("wrap")) return "Burgers & Wraps";
+    if (n.includes("pizza") || n.includes("garlic bread")) return "Pizzas & Garlic Breads";
+    if (n.includes("fries") || n.includes("nachos") || n.includes("golgappe") || n.includes("pav bhaji")) return "Snacks & Chaat";
+    if (n.includes("noodles") || n.includes("chilli") || n.includes("dim sum") || n.includes("momo")) return "Chinese & Momos";
+    if (n.includes("biryani") || n.includes("butter chicken") || n.includes("dal makhani")) return "Biryani & North Indian";
+    if (n.includes("thali") || n.includes("dhokla") || n.includes("khaman")) return "Gujarati & Thalis";
+    if (n.includes("dosa") || n.includes("idli")) return "South Indian";
+    if (n.includes("chai") || n.includes("coffee") || n.includes("juice") || n.includes("mojito")) return "Chai, Coffee & Juices";
+    if (n.includes("cake") || n.includes("gulab jamun") || n.includes("lassi") || n.includes("shake")) return "Desserts & Shakes";
+    return "Chef Special";
+  };
 
   // Day Lock & 7-Day Receipt Archive Modals
   const [showDayLockModal, setShowDayLockModal] = useState<boolean>(false);
@@ -2341,7 +2360,13 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
       matchesPayment = !isCod;
     }
 
-    return matchesStatus && matchesPayment;
+    // Category Filter
+    let matchesCategory = true;
+    if (orderCategoryFilter !== "ALL") {
+      matchesCategory = getOrderCategory(o) === orderCategoryFilter;
+    }
+
+    return matchesStatus && matchesPayment && matchesCategory;
   });
 
   const filteredProducts = products.filter((p) => {
@@ -3297,6 +3322,51 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
                   </div>
                 </div>
 
+                {/* TIER 3: Category Filter Bar */}
+                <div className="pt-1.5 border-t border-gray-100 flex items-center gap-1 overflow-x-auto no-scrollbar scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden py-0.5">
+                  <span className="text-[8.5px] sm:text-[10px] font-black uppercase tracking-wider text-gray-400 flex items-center gap-0.5 shrink-0 mr-1">
+                    <UtensilsCrossed className="w-2.5 h-2.5 text-[#FF6B35]" /> Category:
+                  </span>
+                  {[
+                    { label: "All", value: "ALL", emoji: "✨" },
+                    { label: "Burgers", value: "Burgers & Wraps", emoji: "🍔" },
+                    { label: "Pizzas", value: "Pizzas & Garlic Breads", emoji: "🍕" },
+                    { label: "Snacks", value: "Snacks & Chaat", emoji: "🍟" },
+                    { label: "Chinese", value: "Chinese & Momos", emoji: "🥢" },
+                    { label: "Biryani", value: "Biryani & North Indian", emoji: "🍚" },
+                    { label: "Gujarati", value: "Gujarati & Thalis", emoji: "🟡" },
+                    { label: "South Indian", value: "South Indian", emoji: "🥥" },
+                    { label: "Chai & Juices", value: "Chai, Coffee & Juices", emoji: "☕" },
+                    { label: "Desserts", value: "Desserts & Shakes", emoji: "🍰" },
+                  ].map((cat) => {
+                    const isSelected = orderCategoryFilter === cat.value;
+                    const catCount = cat.value === "ALL" 
+                      ? baseOrdersForFilter.length 
+                      : baseOrdersForFilter.filter(o => getOrderCategory(o) === cat.value).length;
+
+                    return (
+                      <button
+                        key={cat.value}
+                        type="button"
+                        onClick={() => setOrderCategoryFilter(cat.value)}
+                        className={`px-2 py-0.5 sm:py-1 rounded-lg text-[9px] sm:text-xs font-black transition-all flex items-center gap-1 cursor-pointer border shrink-0 whitespace-nowrap ${
+                          isSelected
+                            ? "bg-gradient-to-r from-[#FF6B35] to-[#FF8A00] text-white border-transparent shadow-2xs scale-102"
+                            : "bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200/80 hover:border-gray-300"
+                        }`}
+                      >
+                        <span>{cat.emoji}</span>
+                        <span>{cat.label}</span>
+                        <span className={`text-[8px] sm:text-[9.5px] px-1 py-0.1 rounded font-bold ${
+                          isSelected ? "bg-white/20 text-white" : "bg-gray-200/80 text-gray-600"
+                        }`}>
+                          {catCount}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
               </div>
 
               {/* Orders Cards Grid (Ultra-Compact High-Density Cards on Phone) */}
@@ -3306,6 +3376,7 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
                   const isCod = order.paymentMethod?.toLowerCase().includes("cod") || order.paymentMethod?.toLowerCase().includes("cash");
                   const isCodPaid = isCod && (order.paymentStatus === "PAID" || order.status === "DELIVERED");
                   const isOnlinePaid = !isCod;
+                  const orderCategory = getOrderCategory(order);
 
                   return (
                     <div
@@ -3323,11 +3394,14 @@ export default function AdminDashboardView(props: { defaultTab?: AdminTabType; s
                           className="flex items-center gap-1.5 min-w-0 flex-1 cursor-pointer group hover:opacity-90 transition-opacity"
                           title="Click to view complete order details & customer history"
                         >
-                          <span className="px-1.5 py-0.5 rounded-md bg-[#FFF0E5] text-[#FF6B35] font-black text-[10px] sm:text-xs shrink-0 group-hover:bg-[#FF6B35] group-hover:text-white transition-colors">
-                            #{order.id.slice(-4)}
+                          <span className="px-1.5 py-0.5 rounded-md bg-[#FFF0E5] text-[#FF6B35] font-black text-[10px] sm:text-xs shrink-0 group-hover:bg-[#FF6B35] group-hover:text-white transition-colors font-mono">
+                            #{order.id.slice(-5)}
                           </span>
                           <span className="font-black text-gray-900 text-xs sm:text-sm font-heading truncate group-hover:text-[#FF6B35] transition-colors">
                             {order.customerName}
+                          </span>
+                          <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-gray-100 text-gray-700 border border-gray-200 shrink-0 hidden sm:inline-block">
+                            {orderCategory}
                           </span>
                           {isOnlinePaid ? (
                             <span className="text-[7.5px] font-black px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">

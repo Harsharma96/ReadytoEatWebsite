@@ -28,7 +28,7 @@ interface TrendingDisplayItem {
 }
 
 export const PopularMarquee: React.FC = () => {
-  const { addToCart, openQuickView, toggleWishlist, isInWishlist, activePromo } = useCart();
+  const { addToCart, openQuickView, toggleWishlist, isInWishlist, activePromo, availablePromos } = useCart();
   const [trendingItems, setTrendingItems] = useState<TrendingDisplayItem[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [isAutoPlay, setIsAutoPlay] = useState<boolean>(true);
@@ -154,7 +154,11 @@ export const PopularMarquee: React.FC = () => {
               <span className="text-gray-500">•</span>
               <span className="text-[#3ECF6E]">100% PURE COW DESI GHEE</span>
               <span className="text-gray-500">•</span>
-              {activePromo ? (
+              {availablePromos && availablePromos.length > 0 ? (
+                <span className="text-[#FF4D6D] font-black">
+                  VIP VOUCHERS: {availablePromos.slice(0, 3).map(p => `${p.code} (${p.discountPercent ? `${p.discountPercent}% OFF` : `₹${p.fixedDiscount} OFF`})`).join(" • ")}
+                </span>
+              ) : activePromo ? (
                 <span className="text-[#FF4D6D]">VIP COUPON: {activePromo.code}</span>
               ) : (
                 <span className="text-[#FF4D6D]">25-MIN HOT THERMAL DISPATCH</span>

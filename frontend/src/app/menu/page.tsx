@@ -276,7 +276,7 @@ export default function MenuPage() {
       <Navbar />
 
       {/* Hero Header */}
-      <section className="pt-20 sm:pt-28 pb-6 sm:pb-14 bg-gradient-to-b from-[#FFF0E5] to-[#FFF8F2] relative overflow-hidden">
+      <section className="pt-20 sm:pt-28 pb-6 sm:pb-14 bg-gradient-to-b from-[#FFF0E5] to-[#FFF8F2] relative overflow-visible">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 text-center space-y-2.5 sm:space-y-4 relative z-10">
           <div className="inline-flex items-center gap-1.5 px-3 py-0.5 sm:px-4 sm:py-1.5 rounded-full bg-white text-[#FF6B35] text-[10px] sm:text-xs font-black shadow-xs border border-[#FF6B35]/20">
             <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
