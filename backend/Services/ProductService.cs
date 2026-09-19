@@ -99,9 +99,40 @@ public class ProductService : IProductService
             var idx = db.CustomProducts.FindIndex(p => p.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
             if (idx == -1) return null;
 
-            updates.Id = db.CustomProducts[idx].Id;
-            db.CustomProducts[idx] = updates;
-            return db.CustomProducts[idx];
+            var existing = db.CustomProducts[idx];
+
+            if (!string.IsNullOrWhiteSpace(updates.Name)) existing.Name = updates.Name;
+            if (!string.IsNullOrWhiteSpace(updates.Category)) existing.Category = updates.Category;
+            if (!string.IsNullOrWhiteSpace(updates.Cuisine)) existing.Cuisine = updates.Cuisine;
+            if (!string.IsNullOrWhiteSpace(updates.Tagline)) existing.Tagline = updates.Tagline;
+            if (!string.IsNullOrWhiteSpace(updates.ShortDescription)) existing.ShortDescription = updates.ShortDescription;
+            if (!string.IsNullOrWhiteSpace(updates.FullDescription)) existing.FullDescription = updates.FullDescription;
+            if (updates.Price > 0) existing.Price = updates.Price;
+            if (updates.OriginalPrice.HasValue && updates.OriginalPrice.Value > 0) existing.OriginalPrice = updates.OriginalPrice;
+            if (!string.IsNullOrWhiteSpace(updates.Badge)) existing.Badge = updates.Badge;
+            if (!string.IsNullOrWhiteSpace(updates.AccentColor)) existing.AccentColor = updates.AccentColor;
+            if (!string.IsNullOrWhiteSpace(updates.GradientBg)) existing.GradientBg = updates.GradientBg;
+            if (updates.Rating > 0) existing.Rating = updates.Rating;
+            if (updates.ReviewCount > 0) existing.ReviewCount = updates.ReviewCount;
+            if (!string.IsNullOrWhiteSpace(updates.NetWeight)) existing.NetWeight = updates.NetWeight;
+            if (updates.Images != null && updates.Images.Count > 0) existing.Images = updates.Images;
+            if (updates.Dietary != null && updates.Dietary.Count > 0) existing.Dietary = updates.Dietary;
+            if (updates.Tags != null && updates.Tags.Count > 0) existing.Tags = updates.Tags;
+            if (updates.Ingredients != null && updates.Ingredients.Count > 0) existing.Ingredients = updates.Ingredients;
+            if (updates.Benefits != null && updates.Benefits.Count > 0) existing.Benefits = updates.Benefits;
+            if (!string.IsNullOrWhiteSpace(updates.ServingSuggestion)) existing.ServingSuggestion = updates.ServingSuggestion;
+            if (!string.IsNullOrWhiteSpace(updates.Storage)) existing.Storage = updates.Storage;
+            if (updates.Nutrition != null) existing.Nutrition = updates.Nutrition;
+            if (updates.Customizations != null && updates.Customizations.Count > 0) existing.Customizations = updates.Customizations;
+
+            existing.InStock = updates.InStock;
+            existing.IsVeg = updates.IsVeg;
+            existing.Featured = updates.Featured;
+            existing.BestSeller = updates.BestSeller;
+            existing.IsNew = updates.IsNew;
+
+            db.CustomProducts[idx] = existing;
+            return existing;
         });
 
         return Task.FromResult(updated);

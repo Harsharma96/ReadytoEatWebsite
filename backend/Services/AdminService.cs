@@ -289,6 +289,8 @@ public class AdminService : IAdminService
         var created = _store.Update(db =>
         {
             if (db.TrendingSpotlights == null) db.TrendingSpotlights = new List<TrendingSpotlightItem>();
+            var allProds = db.CustomProducts ?? new List<Product>();
+            item.Product = allProds.FirstOrDefault(p => p.Id.Equals(item.ProductId, StringComparison.OrdinalIgnoreCase));
             db.TrendingSpotlights.Insert(0, item);
             return item;
         });
@@ -304,9 +306,19 @@ public class AdminService : IAdminService
             var idx = db.TrendingSpotlights.FindIndex(t => t.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
             if (idx == -1) return null;
 
-            updates.Id = db.TrendingSpotlights[idx].Id;
-            db.TrendingSpotlights[idx] = updates;
-            return db.TrendingSpotlights[idx];
+            var existing = db.TrendingSpotlights[idx];
+            if (!string.IsNullOrWhiteSpace(updates.ProductId)) existing.ProductId = updates.ProductId;
+            if (!string.IsNullOrWhiteSpace(updates.CustomOfferTag)) existing.CustomOfferTag = updates.CustomOfferTag;
+            if (!string.IsNullOrWhiteSpace(updates.OfferBadge)) existing.OfferBadge = updates.OfferBadge;
+            if (updates.DiscountPercent.HasValue) existing.DiscountPercent = updates.DiscountPercent;
+            if (updates.Priority > 0) existing.Priority = updates.Priority;
+            existing.IsActive = updates.IsActive;
+
+            var allProds = db.CustomProducts ?? new List<Product>();
+            existing.Product = allProds.FirstOrDefault(p => p.Id.Equals(existing.ProductId, StringComparison.OrdinalIgnoreCase));
+
+            db.TrendingSpotlights[idx] = existing;
+            return existing;
         });
 
         return Task.FromResult(updated);
@@ -360,9 +372,17 @@ public class AdminService : IAdminService
             var idx = db.FeastBoxTiers.FindIndex(t => t.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
             if (idx == -1) return null;
 
-            updates.Id = db.FeastBoxTiers[idx].Id;
-            db.FeastBoxTiers[idx] = updates;
-            return db.FeastBoxTiers[idx];
+            var existing = db.FeastBoxTiers[idx];
+            if (updates.Count > 0) existing.Count = updates.Count;
+            if (!string.IsNullOrWhiteSpace(updates.Title)) existing.Title = updates.Title;
+            if (updates.DiscountPercent >= 0) existing.DiscountPercent = updates.DiscountPercent;
+            if (!string.IsNullOrWhiteSpace(updates.Badge)) existing.Badge = updates.Badge;
+            if (!string.IsNullOrWhiteSpace(updates.Gift)) existing.Gift = updates.Gift;
+            if (updates.FreeGifts != null && updates.FreeGifts.Count > 0) existing.FreeGifts = updates.FreeGifts;
+            existing.IsActive = updates.IsActive;
+
+            db.FeastBoxTiers[idx] = existing;
+            return existing;
         });
 
         return Task.FromResult(updated);

@@ -133,14 +133,27 @@ public class PromoService : IPromoService
             var idx = db.PromoCodes.FindIndex(p => p.Code.Equals(cleanCode, StringComparison.OrdinalIgnoreCase));
             if (idx == -1) return null;
 
+            var existing = db.PromoCodes[idx];
+
             if (updates.IsFlashBanner == true)
             {
                 foreach (var p in db.PromoCodes) p.IsFlashBanner = false;
             }
 
-            updates.Code = cleanCode;
-            db.PromoCodes[idx] = updates;
-            return db.PromoCodes[idx];
+            if (!string.IsNullOrWhiteSpace(updates.Title)) existing.Title = updates.Title;
+            if (updates.DiscountPercent.HasValue) existing.DiscountPercent = updates.DiscountPercent;
+            if (updates.FixedDiscount.HasValue) existing.FixedDiscount = updates.FixedDiscount;
+            if (updates.MinSpend > 0) existing.MinSpend = updates.MinSpend;
+            if (!string.IsNullOrWhiteSpace(updates.Description)) existing.Description = updates.Description;
+            if (!string.IsNullOrWhiteSpace(updates.BadgeText)) existing.BadgeText = updates.BadgeText;
+            if (!string.IsNullOrWhiteSpace(updates.FreeItem)) existing.FreeItem = updates.FreeItem;
+            if (updates.HoursLeft.HasValue) existing.HoursLeft = updates.HoursLeft;
+            if (!string.IsNullOrWhiteSpace(updates.BgGradient)) existing.BgGradient = updates.BgGradient;
+            if (updates.IsFlashBanner.HasValue) existing.IsFlashBanner = updates.IsFlashBanner.Value;
+            existing.IsActive = updates.IsActive;
+
+            db.PromoCodes[idx] = existing;
+            return existing;
         });
 
         return Task.FromResult(updated);

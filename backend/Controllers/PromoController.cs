@@ -48,6 +48,7 @@ public class PromoController : ControllerBase
     }
 
     [HttpPost("api/promo")]
+    [HttpPost("api/admin/promos")]
     public async Task<IActionResult> Create([FromBody] PromoCode promo)
     {
         if (string.IsNullOrWhiteSpace(promo.Code))
@@ -66,6 +67,8 @@ public class PromoController : ControllerBase
 
     [HttpPut("api/promo")]
     [HttpPut("api/promo/{code}")]
+    [HttpPut("api/admin/promos/{code}")]
+    [HttpPatch("api/admin/promos/{code}")]
     public async Task<IActionResult> Update([FromRoute] string? code, [FromBody] PromoCode updates)
     {
         var targetCode = !string.IsNullOrWhiteSpace(code) ? code : updates.Code;
@@ -90,9 +93,10 @@ public class PromoController : ControllerBase
 
     [HttpDelete("api/promo")]
     [HttpDelete("api/promo/{code}")]
-    public async Task<IActionResult> Delete([FromRoute] string? code, [FromQuery] string? queryCode)
+    [HttpDelete("api/admin/promos/{code}")]
+    public async Task<IActionResult> Delete([FromRoute] string? code, [FromQuery(Name = "code")] string? queryCode = null, [FromQuery(Name = "queryCode")] string? altQueryCode = null)
     {
-        var targetCode = !string.IsNullOrWhiteSpace(code) ? code : queryCode;
+        var targetCode = !string.IsNullOrWhiteSpace(code) ? code : (!string.IsNullOrWhiteSpace(queryCode) ? queryCode : altQueryCode);
         if (string.IsNullOrWhiteSpace(targetCode))
         {
             return BadRequest(new { success = false, message = "Promo code is required." });

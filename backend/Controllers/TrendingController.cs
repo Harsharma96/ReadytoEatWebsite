@@ -70,9 +70,9 @@ public class TrendingController : ControllerBase
 
     [HttpDelete]
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete([FromRoute] string? id, [FromQuery] string? queryId)
+    public async Task<IActionResult> Delete([FromRoute] string? id, [FromQuery(Name = "id")] string? queryId = null, [FromQuery(Name = "queryId")] string? altQueryId = null)
     {
-        var targetId = !string.IsNullOrWhiteSpace(id) ? id : queryId;
+        var targetId = !string.IsNullOrWhiteSpace(id) ? id : (!string.IsNullOrWhiteSpace(queryId) ? queryId : altQueryId);
         if (string.IsNullOrWhiteSpace(targetId))
         {
             return BadRequest(new { success = false, message = "id is required" });

@@ -62,19 +62,28 @@ public class CategoryService : ICategoryService
             var idx = db.Categories.FindIndex(c => c.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
             if (idx == -1) return null;
 
-            var oldName = db.Categories[idx].Name;
-            updates.Id = db.Categories[idx].Id;
-            db.Categories[idx] = updates;
+            var existing = db.Categories[idx];
+            var oldName = existing.Name;
+
+            if (!string.IsNullOrWhiteSpace(updates.Name)) existing.Name = updates.Name;
+            if (!string.IsNullOrWhiteSpace(updates.Emoji)) existing.Emoji = updates.Emoji;
+            if (!string.IsNullOrWhiteSpace(updates.Subtitle)) existing.Subtitle = updates.Subtitle;
+            if (!string.IsNullOrWhiteSpace(updates.BgGradient)) existing.BgGradient = updates.BgGradient;
+            if (!string.IsNullOrWhiteSpace(updates.BorderColor)) existing.BorderColor = updates.BorderColor;
+            if (!string.IsNullOrWhiteSpace(updates.Accent)) existing.Accent = updates.Accent;
+            if (updates.Priority > 0) existing.Priority = updates.Priority;
+            existing.IsActive = updates.IsActive;
 
             // Cascade category rename to custom products
             if (!string.IsNullOrWhiteSpace(updates.Name) && !updates.Name.Equals(oldName, StringComparison.OrdinalIgnoreCase) && db.CustomProducts != null)
             {
                 foreach (var prod in db.CustomProducts.Where(p => p.Category.Equals(oldName, StringComparison.OrdinalIgnoreCase)))
                 {
-                    prod.Category = updates.Name;
+                    prod.Category = existing.Name;
                 }
             }
 
+            db.Categories[idx] = existing;
             return db.Categories[idx];
         });
 

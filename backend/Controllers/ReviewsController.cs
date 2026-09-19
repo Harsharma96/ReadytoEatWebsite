@@ -50,9 +50,12 @@ public class ReviewsController : ControllerBase
     [HttpDelete("api/feedback")]
     [HttpDelete("api/feedback/{id}")]
     [HttpDelete("api/admin/feedback/{id}")]
-    public async Task<IActionResult> DeleteFeedback([FromRoute] string? id, [FromQuery] string? queryId)
+    [HttpDelete("api/reviews")]
+    [HttpDelete("api/reviews/{id}")]
+    [HttpDelete("api/admin/reviews/{id}")]
+    public async Task<IActionResult> DeleteFeedback([FromRoute] string? id, [FromQuery(Name = "id")] string? queryId = null, [FromQuery(Name = "queryId")] string? altQueryId = null)
     {
-        var targetId = !string.IsNullOrWhiteSpace(id) ? id : queryId;
+        var targetId = !string.IsNullOrWhiteSpace(id) ? id : (!string.IsNullOrWhiteSpace(queryId) ? queryId : altQueryId);
         if (string.IsNullOrWhiteSpace(targetId))
         {
             return BadRequest(new { success = false, message = "id is required" });

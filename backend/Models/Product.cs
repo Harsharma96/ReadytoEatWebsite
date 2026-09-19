@@ -133,6 +133,24 @@ public class Product
     [JsonPropertyName("netWeight")]
     public string? NetWeight { get; set; } = "420g";
 
+    [JsonPropertyName("cuisine")]
+    public string? Cuisine { get; set; }
+
+    [JsonPropertyName("isVeg")]
+    public bool IsVeg { get; set; } = true;
+
+    [JsonPropertyName("bestSeller")]
+    public bool BestSeller { get; set; } = false;
+
+    [JsonPropertyName("benefits")]
+    public List<string>? Benefits { get; set; }
+
+    [JsonPropertyName("servingSuggestion")]
+    public string? ServingSuggestion { get; set; }
+
+    [JsonPropertyName("storage")]
+    public string? Storage { get; set; }
+
     [JsonPropertyName("createdAt")]
     public string CreatedAt { get; set; } = DateTime.UtcNow.ToString("o");
 }

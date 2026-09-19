@@ -8,6 +8,7 @@ using FoodEat.Api.Data;
 using FoodEat.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://localhost:5000");
 
 // ==================== 1. SERVICES & DI ====================
 
